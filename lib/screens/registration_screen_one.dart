@@ -23,9 +23,10 @@ class _RegistrationScreenOneState extends State<RegistrationScreenOne> {
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Are you registered under GST?", style: TextStyle(fontSize: 18),),
                   SizedBox(height: 10),
