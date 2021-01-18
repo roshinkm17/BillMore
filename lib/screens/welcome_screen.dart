@@ -24,12 +24,12 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               MainButton(
                 buttonText: "Log in",
-                location: () {},
+                onPressed: () {},
               ),
               SizedBox(height: 20),
               MainButton(
                 buttonText: "Sign up",
-                location:(){
+                onPressed:(){
                   print("Sign up");
                   Navigator.pushNamed(context, RegistrationScreenOne.id);
                 },
