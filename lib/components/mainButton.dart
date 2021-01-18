@@ -3,8 +3,9 @@ import '../constants.dart';
 
 
 class MainButton extends StatelessWidget {
-  MainButton({this.buttonText});
+  MainButton({this.buttonText, this.location});
   final String buttonText;
+  final Function location;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,9 +14,7 @@ class MainButton extends StatelessWidget {
       child: FlatButton(
         padding: EdgeInsets.symmetric(vertical: 15),
         color: buttonColor,
-        onPressed: (){
-          print("pressed");
-        },
+        onPressed: location,
         child: Text(
           buttonText,
           style: TextStyle(fontSize: 18, color: Colors.white),

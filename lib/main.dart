@@ -1,3 +1,6 @@
+import 'package:biller/screens/registration_screen_one.dart';
+import 'package:biller/screens/registration_screen_three.dart';
+import 'package:biller/screens/registration_screen_two.dart';
 import 'package:biller/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +19,9 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
+        RegistrationScreenOne.id: (context) => RegistrationScreenOne(),
+        RegistrationScreenTwo.id: (context) => RegistrationScreenTwo(),
+        RegistrationScreenThree.id: (context) => RegistrationScreenThree(),
       },
       initialRoute: WelcomeScreen.id,
     );
