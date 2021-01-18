@@ -1,4 +1,5 @@
 
+import 'package:backendless_sdk/backendless_sdk.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
 import 'package:biller/screens/registration_screen_three.dart';
@@ -75,6 +76,21 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
                     },
                   ),
                   SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      hintText: "Password",
+                    ),
+                    obscureText: true,
+                    onChanged: (value){
+                      setState(() {
+                        company.password = value;
+                      });
+                    }
+                  ),
+                  SizedBox(height: 10),
                   CustomInputField(
                     placeholder: "Mobile Number",
                     onChanged: (value) {
@@ -88,7 +104,11 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
               SizedBox(height: 30),
               MainButton(
                 buttonText: "Continue",
-                onPressed: (){
+                onPressed: () async{
+                  BackendlessUser user = BackendlessUser();
+                  user.email = company.email;
+                  user.password = company.password;
+                  await Backendless.userService.register(user);
                   Navigator.pushNamed(context, RegistrationScreenThree.id);
                 },
               ),

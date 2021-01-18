@@ -8,4 +8,5 @@ class Company{
   String email;
   String mobile;
   File logo, signature;
+  String password;
 }

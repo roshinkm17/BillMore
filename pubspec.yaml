@@ -12,6 +12,7 @@ dependencies:
 
   cupertino_icons: ^1.0.0
   gx_file_picker: ^1.9.0+2
+  backendless_sdk: ^6.1.0
 
 dev_dependencies:
   flutter_test:
