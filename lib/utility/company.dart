@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class Company{
   String name;
   String gstNumber;
@@ -5,4 +7,5 @@ class Company{
   String phone;
   String email;
   String mobile;
+  File logo, signature;
 }

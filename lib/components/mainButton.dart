@@ -10,7 +10,7 @@ class MainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      // margin: EdgeInsets.symmetric(horizontal: 20),
       child: FlatButton(
         padding: EdgeInsets.symmetric(vertical: 15),
         color: buttonColor,

@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         RegistrationScreenTwo.id: (context) => RegistrationScreenTwo(),
         RegistrationScreenThree.id: (context) => RegistrationScreenThree(),
       },
-      initialRoute: WelcomeScreen.id,
+      initialRoute: RegistrationScreenThree.id,
     );
   }
 }
