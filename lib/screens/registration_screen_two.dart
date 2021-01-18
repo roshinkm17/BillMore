@@ -20,67 +20,70 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
-              Text(
-                "Need some more details",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "Name of the firm",
-                onChanged: (value) {
-                  setState(() {
-                    company.name = value;
-                  });
-                },
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "GST Number",
-                onChanged: (value) {
-                  setState(() {
-                    company.gstNumber = value;
-                  });
-                },
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "Address",
-                onChanged: (value) {
-                  setState(() {
-                    company.address = value;
-                  });
-                },
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "Phone Number",
-                onChanged: (value) {
-                  setState(() {
-                    company.phone = value;
-                  });
-                },
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "Email ID",
-                onChanged: (value) {
-                  setState(() {
-                    company.email = value;
-                  });
-                },
-              ),
-              //SizedBox(height: 20),
-              CustomInputField(
-                placeholder: "Mobile Number",
-                onChanged: (value) {
-                  setState(() {
-                    company.mobile = value;
-                  });
-                },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Need some more details",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 30),
+                  CustomInputField(
+                    placeholder: "Name of the firm",
+                    onChanged: (value) {
+                      setState(() {
+                        company.name = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomInputField(
+                    placeholder: "GST Number",
+                    onChanged: (value) {
+                      setState(() {
+                        company.gstNumber = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomInputField(
+                    placeholder: "Address",
+                    onChanged: (value) {
+                      setState(() {
+                        company.address = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomInputField(
+                    placeholder: "Phone Number",
+                    onChanged: (value) {
+                      setState(() {
+                        company.phone = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomInputField(
+                    placeholder: "Email ID",
+                    onChanged: (value) {
+                      setState(() {
+                        company.email = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomInputField(
+                    placeholder: "Mobile Number",
+                    onChanged: (value) {
+                      setState(() {
+                        company.mobile = value;
+                      });
+                    },
+                  ),
+                ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
