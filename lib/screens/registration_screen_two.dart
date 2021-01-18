@@ -85,16 +85,12 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MainButton(
-                    buttonText: "Continue",
-                    onPressed: (){
-                      Navigator.pushNamed(context, RegistrationScreenThree.id);
-                    },
-                  ),
-                ],
+              SizedBox(height: 30),
+              MainButton(
+                buttonText: "Continue",
+                onPressed: (){
+                  Navigator.pushNamed(context, RegistrationScreenThree.id);
+                },
               ),
             ],
           ),

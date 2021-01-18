@@ -9,34 +9,37 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            "Biller",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 48,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "Biller",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 48,
+              ),
             ),
-          ),
-          Column(
-            children: [
-              MainButton(
-                buttonText: "Log in",
-                onPressed: () {},
-              ),
-              SizedBox(height: 20),
-              MainButton(
-                buttonText: "Sign up",
-                onPressed:(){
-                  print("Sign up");
-                  Navigator.pushNamed(context, RegistrationScreenOne.id);
-                },
-              ),
-            ],
-          ),
-        ],
+            Column(
+              children: [
+                MainButton(
+                  buttonText: "Log in",
+                  onPressed: () {},
+                ),
+                SizedBox(height: 20),
+                MainButton(
+                  buttonText: "Sign up",
+                  onPressed:(){
+                    print("Sign up");
+                    Navigator.pushNamed(context, RegistrationScreenOne.id);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
