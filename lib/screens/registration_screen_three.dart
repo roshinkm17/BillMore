@@ -1,6 +1,7 @@
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
 import 'package:biller/constants.dart';
+import 'package:biller/screens/layout_screen.dart';
 import 'package:biller/utility/bank.dart';
 import 'package:biller/utility/company.dart';
 import 'package:flutter/material.dart';
@@ -178,7 +179,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                     onPressed: (){
                       if(_formKey.currentState.validate()){
                         if(_logoName != null && _signatureName != null ){
-                          //Continue
+                          Navigator.pushNamed(context, LayoutScreen.id);
                         }
                         else{
                           final snackBar = SnackBar(

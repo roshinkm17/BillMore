@@ -1,4 +1,5 @@
 import 'package:biller/screens/home_screen.dart';
+import 'package:biller/screens/layout_screen.dart';
 import 'package:biller/screens/login_screen.dart';
 import 'package:biller/screens/registration_screen_one.dart';
 import 'package:biller/screens/registration_screen_three.dart';
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
         LoginScreen.id: (context) => LoginScreen(),
         HomeScreen.id: (context) => HomeScreen(),
       },
-      initialRoute: RegistrationScreenThree.id,
+      initialRoute: LayoutScreen.id,
     );
   }
 }
