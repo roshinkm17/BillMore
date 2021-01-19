@@ -9,4 +9,5 @@ class Company{
   String mobile;
   File logo, signature;
   String password;
+  String businessType;
 }

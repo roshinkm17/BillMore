@@ -31,7 +31,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
                 image: DecorationImage(
-                  image: AssetImage('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fmusic&psig=AOvVaw1I3tT8PGH_TsX1PBb4r1No&ust=1611120365622000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJj7tJmhp-4CFQAAAAAdAAAAABAD'),
+                  image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
                   fit: BoxFit.cover,
                 )
               ),
@@ -40,7 +40,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   image: DecorationImage(
-                    image: AssetImage('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fmusic&psig=AOvVaw1I3tT8PGH_TsX1PBb4r1No&ust=1611120365622000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJj7tJmhp-4CFQAAAAAdAAAAABAD'),
+                    image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
                     fit: BoxFit.cover,
                   )
               ),
@@ -49,7 +49,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   image: DecorationImage(
-                    image: AssetImage('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fmusic&psig=AOvVaw1I3tT8PGH_TsX1PBb4r1No&ust=1611120365622000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJj7tJmhp-4CFQAAAAAdAAAAABAD'),
+                    image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
                     fit: BoxFit.cover,
                   )
               ),
@@ -58,7 +58,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   image: DecorationImage(
-                    image: AssetImage('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fmusic&psig=AOvVaw1I3tT8PGH_TsX1PBb4r1No&ust=1611120365622000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJj7tJmhp-4CFQAAAAAdAAAAABAD'),
+                    image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
                     fit: BoxFit.cover,
                   )
               ),
@@ -67,7 +67,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   image: DecorationImage(
-                    image: AssetImage('https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fs%2Fphotos%2Fmusic&psig=AOvVaw1I3tT8PGH_TsX1PBb4r1No&ust=1611120365622000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJj7tJmhp-4CFQAAAAAdAAAAABAD'),
+                    image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
                     fit: BoxFit.cover,
                   )
               ),
@@ -84,7 +84,6 @@ class _LayoutScreenState extends State<LayoutScreen> {
             buttonText: "Continue",
             onPressed: (){
               Navigator.pushNamed(context, InvoiceScreen.id);
-
             },
           ),
           ],

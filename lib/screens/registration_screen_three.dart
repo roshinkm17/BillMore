@@ -1,7 +1,8 @@
+import 'package:backendless_sdk/backendless_sdk.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
 import 'package:biller/constants.dart';
-import 'package:biller/screens/layout_screen.dart';
+import 'package:biller/screens/home_screen.dart';
 import 'package:biller/utility/bank.dart';
 import 'package:biller/utility/company.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,38 @@ class RegistrationScreenThree extends StatefulWidget {
 
 class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
   Bank bank = new Bank();
-  Company company = new Company();
   String _logoName ;
   String _signatureName ;
   final _formKey = GlobalKey<FormState>();
+  uploadDetails(Company companyDetails, Bank bankDetails) async{
+    Map details = {
+      "name": companyDetails.name,
+      "phone": companyDetails.phone,
+      "mobile": companyDetails.mobile,
+      "address": companyDetails.address,
+      "businessType": companyDetails.businessType,
+      "gstNumber": companyDetails.gstNumber,
+      // "signature": companyDetails.signature.toString(),
+      // "logo": companyDetails.logo.toString(),
+      "bankName": bankDetails.name,
+      "ifscCode": bankDetails.ifsc,
+      "accNumber": bankDetails.accNumber,
+      "branch": bankDetails.branch,
+    };
+    Backendless.data.of("UserDetails").save(details);
+    print(details);
+  }
+
+  void registerUser(email, password) async{
+    BackendlessUser user = BackendlessUser();
+    user.email = email;
+    user.password = password;
+    await Backendless.userService.register(user);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context).settings.arguments as Map<String, Company>;
     return Scaffold(
       body: Builder(
         builder:(context) => SafeArea(
@@ -71,16 +98,6 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                           });
                         },
                       ),
-                      // CustomInputField(
-                      //   keyboardType: TextInputType.number,
-                      //   placeholder: "Account Number",
-                      //   onChanged: (value) {
-                      //     setState(() {
-                      //       bank.accNumber = value;
-                      //     });
-                      //     print(bank.accNumber);
-                      //   },
-                      // ),
                       SizedBox(height: 10),
                       CustomInputField(
                         placeholder: "Branch",
@@ -128,7 +145,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                                   );
                                   print(file);
                                   setState(() {
-                                    company.logo = file;
+                                    args['company'].logo = file;
                                     _logoName = basename(file.path);
                                   });
                                 },
@@ -163,7 +180,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                                   );
                                   print(file);
                                   setState(() {
-                                    company.signature = file;
+                                    args['company'].signature = file;
                                     _signatureName = basename(file.path);
                                   });
                                 },
@@ -179,7 +196,29 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                     onPressed: (){
                       if(_formKey.currentState.validate()){
                         if(_logoName != null && _signatureName != null ){
-                          Navigator.pushNamed(context, LayoutScreen.id);
+                          //Continue
+                          uploadDetails(args['company'], bank);
+                          registerUser(args['company'].email, args['company'].password);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                title: Text("Registered Successfully!"),
+                                content: Icon(Icons.check),
+                                actions: [
+                                  FlatButton(
+                                    onPressed: (){
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Ok"),
+                                  ),
+                                ],
+                              );
+                            }
+                          );
+                          Future.delayed(const Duration(milliseconds: 1500), (){
+                             Navigator.pushNamed(context, HomeScreen.id);
+                          });
                         }
                         else{
                           final snackBar = SnackBar(

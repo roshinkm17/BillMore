@@ -11,6 +11,7 @@ class RegistrationScreenOne extends StatefulWidget {
 
 class _RegistrationScreenOneState extends State<RegistrationScreenOne> {
   @override
+  bool isGSTRegistered = true;
   List<String> _gstRegisered = ['Yes', 'No'];
   String _gstReg = "Yes";
   List<String> _gstAssistance = ['Yes', 'No'];
@@ -95,7 +96,7 @@ class _RegistrationScreenOneState extends State<RegistrationScreenOne> {
               MainButton(
                 buttonText: "Continue",
                 onPressed: (){
-                  Navigator.pushNamed(context, RegistrationScreenTwo.id);
+                  Navigator.pushNamed(context, RegistrationScreenTwo.id, arguments: {"gst": _gstReg, "businessType": _type});
                 },
               ),
             ],
