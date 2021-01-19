@@ -39,6 +39,8 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
       "branch": bankDetails.branch,
     };
     Backendless.data.of("UserDetails").save(details);
+    await Backendless.files.upload(companyDetails.logo, "/${companyDetails.email}/logo");
+    await Backendless.files.upload(companyDetails.signature, "/${companyDetails.email}/signature");
     print(details);
   }
 

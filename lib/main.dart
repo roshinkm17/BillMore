@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
         LayoutScreen.id: (context) => LayoutScreen(),
         InvoiceScreen.id: (context) => InvoiceScreen(),
       },
-      initialRoute: LayoutScreen.id,
+      initialRoute: InvoiceScreen.id,
     );
   }
 }

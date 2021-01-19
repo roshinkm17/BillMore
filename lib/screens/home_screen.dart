@@ -1,9 +1,11 @@
 import 'package:backendless_sdk/backendless_sdk.dart';
+import 'package:biller/components/mainButton.dart';
+import 'package:biller/screens/layout_screen.dart';
 import 'package:biller/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key}): super(key: key);
+  HomeScreen({Key key}) : super(key: key);
   static String id = "home_screen_id";
 
   @override
@@ -12,12 +14,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState(){
+  void initState() {
     super.initState();
     getCurrentUser();
   }
 
-  void getCurrentUser() async{
+  void getCurrentUser() async {
     BackendlessUser user = await Backendless.userService.currentUser();
     setState(() {
       currentUser = user;
@@ -28,17 +30,39 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Home Page"),),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings_rounded, color: Colors.white,),
+            iconSize: 20,
+            onPressed: (){
+              //to Settings
+            },
+          ),
+        ],
+        automaticallyImplyLeading: false,
+        title: Text(currentUser.email),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.exit_to_app),
-        onPressed: () async{
+        onPressed: () async {
           await Backendless.userService.logout();
           Navigator.pushReplacementNamed(context, WelcomeScreen.id);
         },
       ),
       body: Builder(
-        builder:(context) => SafeArea(
-          child: Column(),
+        builder: (context) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Center(
+              child: MainButton(
+                buttonText: "Create New Invoice",
+                onPressed: () {
+                  Navigator.pushNamed(context, LayoutScreen.id);
+                },
+              ),
+            ),
+          ),
         ),
       ),
     );
