@@ -19,152 +19,181 @@ class RegistrationScreenThree extends StatefulWidget {
 class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
   Bank bank = new Bank();
   Company company = new Company();
-  String _logoName = "Logo (jpeg, jpg, png)";
-  String _signatureName = "Signature (jpeg, jpg, png)";
+  String _logoName ;
+  String _signatureName ;
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          child: ListView(
-            children: [
-              Text(
-                "Bank Details",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Builder(
+        builder:(context) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            child: Form(
+              key: _formKey,
+              child: ListView(
                 children: [
-                  CustomInputField(
-                    placeholder: "Name",
-                    onChanged: (value) {
-                      setState(() {
-                        bank.name = value;
-                      });
-                    },
+                  Text(
+                    "Bank Details",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "IFSC Code",
-                    onChanged: (value) {
-                      setState(() {
-                        bank.ifsc = value;
-                      });
-                    },
+                  SizedBox(
+                    height: 20,
                   ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Account Number",
-                    onChanged: (value) {
-                      setState(() {
-                        bank.accNumber = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Branch",
-                    onChanged: (value) {
-                      setState(() {
-                        bank.branch = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text("Upload",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              SizedBox(height: 30),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 4,
-                        child: TextField(
-                          enabled: false,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            hintText: _logoName,
-                          ),
-                          onChanged: (value) async{
-                          },
-                        ),
+                      CustomInputField(
+                        placeholder: "Name",
+                        onChanged: (value) {
+                          setState(() {
+                            bank.name = value;
+                          });
+                        },
                       ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        child: FlatButton(
-                          padding: EdgeInsets.symmetric(vertical: 17),
-                            color: buttonColor,
-                            onPressed: () async{
-                              File file = await FilePicker.getFile(
-                                type: FileType.image,
-                              );
-                              print(file);
-                              setState(() {
-                                company.logo = file;
-                                _logoName = basename(file.path);
-                              });
-                            },
-                            child: Icon(Icons.attach_file, color: Colors.white,)),
-                      )
+                      SizedBox(height: 10),
+                      CustomInputField(
+                        placeholder: "IFSC Code",
+                        onChanged: (value) {
+                          setState(() {
+                            bank.ifsc = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      CustomInputField(
+                        keyboardType: TextInputType.number,
+                        placeholder: "Account number",
+                        onChanged: (value) {
+                          setState(() {
+                            bank.accNumber = value;
+                          });
+                        },
+                      ),
+                      // CustomInputField(
+                      //   keyboardType: TextInputType.number,
+                      //   placeholder: "Account Number",
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       bank.accNumber = value;
+                      //     });
+                      //     print(bank.accNumber);
+                      //   },
+                      // ),
+                      SizedBox(height: 10),
+                      CustomInputField(
+                        placeholder: "Branch",
+                        onChanged: (value) {
+                          setState(() {
+                            bank.branch = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 10),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Row(
+                  SizedBox(height: 20),
+                  Text("Upload",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 30),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        flex: 4,
-                        child: TextField(
-                          enabled: false,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: TextField(
+                              enabled: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                hintText: _logoName == null ? "Logo (jpeg, jpg, png)" : _logoName,
+                              ),
+                              onChanged: (value) async{
+                              },
                             ),
-                            hintText: _signatureName,
                           ),
-                          onChanged: (value) {},
-                        ),
+                          SizedBox(width: 10,),
+                          Expanded(
+                            child: FlatButton(
+                              padding: EdgeInsets.symmetric(vertical: 17),
+                                color: buttonColor,
+                                onPressed: () async{
+                                  File file = await FilePicker.getFile(
+                                    type: FileType.image,
+                                  );
+                                  print(file);
+                                  setState(() {
+                                    company.logo = file;
+                                    _logoName = basename(file.path);
+                                  });
+                                },
+                                child: Icon(Icons.attach_file, color: Colors.white,)),
+                          )
+                        ],
                       ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        child: FlatButton(
-                            padding: EdgeInsets.symmetric(vertical: 17),
-                            color: buttonColor,
-                            onPressed: () async{
-                              File file = await FilePicker.getFile(
-                                type: FileType.image,
-                              );
-                              print(file);
-                              setState(() {
-                                company.signature = file;
-                                _signatureName = basename(file.path);
-                              });
-                            },
-                            child: Icon(Icons.attach_file, color: Colors.white,)),
-                      )
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: TextField(
+                              enabled: false,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                                hintText: _signatureName == null ? "Signature (jpeg, jpg, png)" : _signatureName,
+                              ),
+                              onChanged: (value) {},
+                            ),
+                          ),
+                          SizedBox(width: 10,),
+                          Expanded(
+                            child: FlatButton(
+                                padding: EdgeInsets.symmetric(vertical: 17),
+                                color: buttonColor,
+                                onPressed: () async{
+                                  File file = await FilePicker.getFile(
+                                    type: FileType.image,
+                                  );
+                                  print(file);
+                                  setState(() {
+                                    company.signature = file;
+                                    _signatureName = basename(file.path);
+                                  });
+                                },
+                                child: Icon(Icons.attach_file, color: Colors.white,)),
+                          )
+                        ],
+                      ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  MainButton(
+                buttonText: "Continue",
+                    onPressed: (){
+                      if(_formKey.currentState.validate()){
+                        if(_logoName != null && _signatureName != null ){
+                          //Continue
+                        }
+                        else{
+                          final snackBar = SnackBar(
+                            content: Text('Both files have to be uploaded!'),
+                            duration: Duration(seconds: 2),
+                          );
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                      }
+                      print("Upload Done");
+                    },
+              ),
                 ],
               ),
-              SizedBox(height: 20),
-              MainButton(
-            buttonText: "Continue",
-                onPressed: (){
-                  print("Upload Done");
-                },
-          ),
-            ],
+            ),
           ),
         ),
       ),

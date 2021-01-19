@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
         LoginScreen.id: (context) => LoginScreen(),
         HomeScreen.id: (context) => HomeScreen(),
       },
-      initialRoute: WelcomeScreen.id,
+      initialRoute: RegistrationScreenThree.id,
     );
   }
 }

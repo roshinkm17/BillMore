@@ -15,6 +15,7 @@ class RegistrationScreenTwo extends StatefulWidget {
 
 class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
   Company company = new Company();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,93 +24,110 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
           child: ListView(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Need some more details",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 30),
-                  CustomInputField(
-                    placeholder: "Name of the firm",
-                    onChanged: (value) {
-                      setState(() {
-                        company.name = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "GST Number",
-                    onChanged: (value) {
-                      setState(() {
-                        company.gstNumber = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Address",
-                    onChanged: (value) {
-                      setState(() {
-                        company.address = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Phone Number",
-                    onChanged: (value) {
-                      setState(() {
-                        company.phone = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Email ID",
-                    onChanged: (value) {
-                      setState(() {
-                        company.email = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                      hintText: "Password",
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Need some more details",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    obscureText: true,
-                    onChanged: (value){
-                      setState(() {
-                        company.password = value;
-                      });
-                    }
-                  ),
-                  SizedBox(height: 10),
-                  CustomInputField(
-                    placeholder: "Mobile Number",
-                    onChanged: (value) {
-                      setState(() {
-                        company.mobile = value;
-                      });
-                    },
-                  ),
-                ],
+                    SizedBox(height: 30),
+                    CustomInputField(
+                      placeholder: "Name of the firm",
+                      onChanged: (value) {
+                        setState(() {
+                          company.name = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    CustomInputField(
+                      placeholder: "GST Number",
+                      onChanged: (value) {
+                        setState(() {
+                          company.gstNumber = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    CustomInputField(
+                      placeholder: "Address",
+                      onChanged: (value) {
+                        setState(() {
+                          company.address = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    CustomInputField(
+                      keyboardType: TextInputType.phone,
+                      placeholder: "Phone Number",
+                      onChanged: (value) {
+                        setState(() {
+                          company.phone = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    CustomInputField(
+                      keyboardType: TextInputType.emailAddress,
+                      placeholder: "Email ID",
+                      onChanged: (value) {
+                        setState(() {
+                          company.email = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        hintText: "Password",
+                      ),
+                      obscureText: true,
+                      validator: (value){
+                        if(value.isEmpty){
+                          return "Cannot be empty";
+                        }
+                        else if(value.length <=6){
+                          return "Password cannot be less than 6 characters";
+                        }
+                        return null;
+                      },
+                      onChanged: (value){
+                        setState(() {
+                          company.password = value;
+                        });
+                      }
+                    ),
+                    SizedBox(height: 10),
+                    CustomInputField(
+                      keyboardType: TextInputType.phone,
+                      placeholder: "Mobile Number",
+                      onChanged: (value) {
+                        setState(() {
+                          company.mobile = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 30),
               MainButton(
                 buttonText: "Continue",
                 onPressed: () async{
-                  BackendlessUser user = BackendlessUser();
-                  user.email = company.email;
-                  user.password = company.password;
-                  await Backendless.userService.register(user);
-                  Navigator.pushNamed(context, RegistrationScreenThree.id);
+                  if(_formKey.currentState.validate()){
+                    BackendlessUser user = BackendlessUser();
+                    user.email = company.email;
+                    user.password = company.password;
+                    await Backendless.userService.register(user);
+                    Navigator.pushNamed(context, RegistrationScreenThree.id);
+                  }
                 },
               ),
             ],
