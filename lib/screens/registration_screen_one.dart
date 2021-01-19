@@ -11,7 +11,6 @@ class RegistrationScreenOne extends StatefulWidget {
 
 class _RegistrationScreenOneState extends State<RegistrationScreenOne> {
   @override
-  bool isGSTRegistered = true;
   List<String> _gstRegisered = ['Yes', 'No'];
   String _gstReg = "Yes";
   List<String> _gstAssistance = ['Yes', 'No'];
