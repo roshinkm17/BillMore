@@ -139,6 +139,9 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                           SizedBox(width: 10,),
                           Expanded(
                             child: FlatButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               padding: EdgeInsets.symmetric(vertical: 17),
                                 color: buttonColor,
                                 onPressed: () async{
@@ -174,6 +177,9 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                           SizedBox(width: 10,),
                           Expanded(
                             child: FlatButton(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 padding: EdgeInsets.symmetric(vertical: 17),
                                 color: buttonColor,
                                 onPressed: () async{

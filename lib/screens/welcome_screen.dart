@@ -47,11 +47,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              "Biller",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 48,
+            Container(
+              height: 400,
+              width: 600,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/logo.png'),
+                  fit: BoxFit.cover,
+                )
               ),
             ),
             Column(

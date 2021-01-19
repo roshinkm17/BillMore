@@ -1,5 +1,6 @@
 import 'package:backendless_sdk/backendless_sdk.dart';
 import 'package:biller/components/mainButton.dart';
+import 'package:biller/constants.dart';
 import 'package:biller/screens/layout_screen.dart';
 import 'package:biller/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // getCurrentUser();
+    getCurrentUser();
   }
 
   void getCurrentUser() async {
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: buttonColor,
         actions: [
           IconButton(
             icon: Icon(Icons.settings_rounded, color: Colors.white,),
@@ -44,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(currentUser.email),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: buttonColor,
         child: Icon(Icons.exit_to_app),
         onPressed: () async {
           await Backendless.userService.logout();

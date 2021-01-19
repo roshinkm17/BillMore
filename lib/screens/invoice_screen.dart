@@ -45,7 +45,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    invoice.nextInt(1000000).toString(),
+                    "1234",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ],
@@ -79,7 +79,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                         },
                         icon: Icon(Icons.delete_rounded),
                         iconSize: 18,
-                        color: Colors.red,
+                        color: Colors.grey[700],
                       ),
                       AddButton(
                         buttonText: "Add",
@@ -115,7 +115,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                         },
                         icon: Icon(Icons.delete_rounded),
                         iconSize: 18,
-                        color: Colors.red,
+                        color: Colors.grey[700],
                       ),
                       AddButton(
                         buttonText: "Add",
@@ -151,7 +151,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                         },
                         icon: Icon(Icons.delete_rounded),
                         iconSize: 18,
-                        color: Colors.red,
+                        color: Colors.grey[700],
                       ),
                       AddButton(
                         buttonText: "Add",
@@ -194,7 +194,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                           },
                           icon: Icon(Icons.delete_rounded),
                           iconSize: 18,
-                          color: Colors.red,
+                          color: Colors.grey[700],
                         ),
                         Expanded(
                           child: CustomInputField(
@@ -301,7 +301,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff255c99),
+                          color: buttonColor,
                         ),
                         child: IconButton(
                           onPressed: () async {

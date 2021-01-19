@@ -12,6 +12,9 @@ class MainButton extends StatelessWidget {
       width: double.infinity,
       // margin: EdgeInsets.symmetric(horizontal: 20),
       child: FlatButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         padding: EdgeInsets.symmetric(vertical: 15),
         color: buttonColor,
         onPressed: onPressed,

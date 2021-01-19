@@ -10,7 +10,8 @@ class AddButton extends StatelessWidget {
     return Container(
       child: FlatButton(
         onPressed: onPressed,
-        child: Text(buttonText, style: TextStyle(color: Colors.white),),
+        child: Text(buttonText, style: TextStyle
+          (color: Colors.white),),
         color: buttonColor,
       ),
     );
