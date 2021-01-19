@@ -11,7 +11,7 @@ class RegistrationScreenTwo extends StatefulWidget {
   _RegistrationScreenTwoState createState() => _RegistrationScreenTwoState();
 }
 
-class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
+class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with AutomaticKeepAliveClientMixin {
   Company company = new Company();
   final _formKey = GlobalKey<FormState>();
   @override
@@ -140,4 +140,8 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

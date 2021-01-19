@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    // getCurrentUser();
   }
 
   void getCurrentUser() async {
@@ -55,11 +55,23 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Center(
-              child: MainButton(
-                buttonText: "Create New Invoice",
-                onPressed: () {
-                  Navigator.pushNamed(context, LayoutScreen.id);
-                },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MainButton(
+                    buttonText: "Create New Invoice",
+                    onPressed: () {
+                      Navigator.pushNamed(context, LayoutScreen.id);
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  MainButton(
+                    buttonText: "View Invoices",
+                    onPressed: (){
+                      print("view invoices");
+                    },
+                  ),
+                ],
               ),
             ),
           ),

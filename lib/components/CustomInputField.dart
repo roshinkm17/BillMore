@@ -11,6 +11,7 @@ class CustomInputField extends StatelessWidget {
       child: TextFormField(
     keyboardType: keyboardType == null ? TextInputType.text : keyboardType,
         decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.black),
           ),

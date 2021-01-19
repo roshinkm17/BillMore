@@ -14,7 +14,7 @@ class InvoiceScreen extends StatefulWidget {
   _InvoiceScreenState createState() => _InvoiceScreenState();
 }
 
-class _InvoiceScreenState extends State<InvoiceScreen> {
+class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveClientMixin{
   final Random invoice = new Random(1000000);
   Bill bill = new Bill();
   DateTime selectedDate = DateTime.now();
@@ -66,13 +66,30 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Items", style: TextStyle(fontSize: 16)),
-                  AddButton(
-                    buttonText: "Add",
-                    onPressed: () {
-                      setState(() {
-                        itemList.add(ItemInfo());
-                      });
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          print("delete");
+                          if(itemList.length > 1){
+                            setState(() {
+                              itemList.removeLast();
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.delete_rounded),
+                        iconSize: 18,
+                        color: Colors.red,
+                      ),
+                      AddButton(
+                        buttonText: "Add",
+                        onPressed: () {
+                          setState(() {
+                            itemList.add(ItemInfo());
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ), //Items
@@ -85,13 +102,30 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Charges", style: TextStyle(fontSize: 16)),
-                  AddButton(
-                    buttonText: "Add",
-                    onPressed: () {
-                      setState(() {
-                        chargesList.add(Charges());
-                      });
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          print("delete");
+                          if(chargesList.length > 0){
+                            setState(() {
+                              chargesList.removeLast();
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.delete_rounded),
+                        iconSize: 18,
+                        color: Colors.red,
+                      ),
+                      AddButton(
+                        buttonText: "Add",
+                        onPressed: () {
+                          setState(() {
+                            chargesList.add(Charges());
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ), //Charges
@@ -104,14 +138,32 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Discount", style: TextStyle(fontSize: 16)),
-                  AddButton(
-                    buttonText: "Add",
-                    onPressed: () {
-                      setState(() {
-                        discountList.add(Discounts());
-                      });
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          print("delete");
+                          if(discountList.length > 0){
+                            setState(() {
+                              discountList.removeLast();
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.delete_rounded),
+                        iconSize: 18,
+                        color: Colors.red,
+                      ),
+                      AddButton(
+                        buttonText: "Add",
+                        onPressed: () {
+                          setState(() {
+                            discountList.add(Discounts());
+                          });
+                        },
+                      ),
+                    ],
                   ),
+
                 ],
               ), //Discount
               //List of Discounts
@@ -130,11 +182,27 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         _setGST = true;
                       });
                     },
-                  ):
+                  ) :
                   Expanded(
-                    child: CustomInputField(
-                      placeholder: "%",
-                      onChanged: (value) {},
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: (){
+                              setState(() {
+                                _setGST = false;
+                              });
+                          },
+                          icon: Icon(Icons.delete_rounded),
+                          iconSize: 18,
+                          color: Colors.red,
+                        ),
+                        Expanded(
+                          child: CustomInputField(
+                            placeholder: "%",
+                            onChanged: (value) {},
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -274,6 +342,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class ItemInfo extends StatelessWidget {
@@ -293,6 +365,7 @@ class ItemInfo extends StatelessWidget {
           SizedBox(width: 5),
           Expanded(
             child: CustomInputField(
+              keyboardType: TextInputType.number,
               placeholder: "Qty",
               onChanged: (value) {},
             ),
@@ -308,6 +381,7 @@ class ItemInfo extends StatelessWidget {
           Expanded(
             child: CustomInputField(
               placeholder: "\$",
+              keyboardType: TextInputType.number,
               onChanged: (value) {},
             ),
           ),
