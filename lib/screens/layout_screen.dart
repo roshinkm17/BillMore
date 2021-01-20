@@ -33,7 +33,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   image: DecorationImage(
-                    image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
+                    image: AssetImage('assets/layouts/layout1.png'),
                     fit: BoxFit.cover,
                   )
                 ),
@@ -42,7 +42,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                     image: DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
+                      image:  AssetImage('assets/layouts/layout2.png'),
                       fit: BoxFit.cover,
                     )
                 ),
@@ -51,29 +51,11 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                     image: DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
+                      image:  AssetImage('assets/layouts/layout3.png'),
                       fit: BoxFit.cover,
                     )
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    image: DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
-                      fit: BoxFit.cover,
-                    )
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    image: DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1610494163430-c4d02015a656?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1226&q=80'),
-                      fit: BoxFit.cover,
-                    )
-                ),
-              )
             ],
                 options: CarouselOptions(
                   height: MediaQuery.of(context).size.height/2,
