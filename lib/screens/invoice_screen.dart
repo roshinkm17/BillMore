@@ -57,6 +57,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
       print(gstAmount);
       bill.totalAmount = bill.totalAmount - int.parse(bill.discount) + gstAmount;
       bill.balanceAmount = bill.totalAmount - int.parse(bill.advanceAmount);
+      bill.balanceAmount.toStringAsFixed(1);
     });
     return 0;
   }
