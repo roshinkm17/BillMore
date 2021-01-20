@@ -21,13 +21,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getCurrentUser() async {
-    BackendlessUser user = await Backendless.userService.currentUser();
+    print("getting current user");
+    String currentUserObjectId = await Backendless.userService.loggedInUser();
+    var user = await  Backendless.data.of("Users").findById(currentUserObjectId);
+    print(user);
     setState(() {
-      currentUser = user;
+      currentUserEmail = user['email'];
     });
   }
 
-  BackendlessUser currentUser;
+  String currentUserEmail;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         automaticallyImplyLeading: false,
-        title: Text(currentUser.email),
+        title: Text(currentUserEmail == null ? "" : currentUserEmail),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: buttonColor,

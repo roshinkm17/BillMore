@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:biller/utility/bill.dart';
 import 'package:biller/components/addButton.dart';
+import 'package:flutter/services.dart';
 import '../constants.dart';
 
 class InvoiceScreen extends StatefulWidget {
@@ -14,21 +15,22 @@ class InvoiceScreen extends StatefulWidget {
   _InvoiceScreenState createState() => _InvoiceScreenState();
 }
 
-class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveClientMixin{
+class _InvoiceScreenState extends State<InvoiceScreen>
+    with AutomaticKeepAliveClientMixin {
   final Random invoice = new Random(1000000);
   Bill bill = new Bill();
   DateTime selectedDate = DateTime.now();
-  List<Widget> itemList = [ItemInfo()];
+  List<Widget> itemList = [];
   List<Widget> chargesList = [];
-  List<Widget> discountList = [];
-  bool _setGST = false;
+  var itemCount = 0;
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return Scaffold(
       body: Builder(
         builder: (context) => SafeArea(
             child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: ListView(
             children: [
               Text(
@@ -69,23 +71,95 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                   Row(
                     children: [
                       IconButton(
-                        onPressed: (){
-                          print("delete");
-                          if(itemList.length > 1){
+                        onPressed: () {
+                          if (itemList.length > 0) {
                             setState(() {
                               itemList.removeLast();
+                              if(itemCount == 1){
+                                bill.itemList.removeLast();
+                                itemCount--;
+                              }else{
+                                bill.itemList.removeAt(itemCount-2);
+                                itemCount--;
+                              }
                             });
                           }
+                          print(itemCount);
                         },
                         icon: Icon(Icons.delete_rounded),
                         iconSize: 18,
                         color: Colors.grey[700],
                       ),
                       AddButton(
-                        buttonText: "Add",
+                        buttonText: "+",
                         onPressed: () {
+                          Map<String, String> item = new Map();
                           setState(() {
-                            itemList.add(ItemInfo());
+                            if(itemCount == 0){
+                              itemList.add(new ItemInfo(
+                                nameOnChanged: (value) {
+                                  setState(() {
+                                    item['name'] = value;
+                                  });
+                                },
+                                qtyOnChanged: (value) {
+                                  setState(() {
+                                    item['qty'] = value;
+                                  });
+                                },
+                                unitOnChanged: (value) {
+                                  setState(() {
+                                    item['unit'] = value;
+                                  });
+                                },
+                                priceOnChanged: (value) {
+                                  item['price'] = value;
+                                },
+                              ));
+                              bill.itemList.add(item);
+                              itemCount++;
+                            }
+                            print(bill.itemList);
+                            print(itemCount);
+                            if(itemCount > 0) {
+                              if (bill.itemList[itemCount - 1]['name'] ==
+                                  null ||
+                                  bill.itemList[itemCount - 1]['qty'] == null ||
+                                  bill.itemList[itemCount - 1]['unit'] ==
+                                      null ||
+                                  bill.itemList[itemCount - 1]['price'] ==
+                                      null) {
+                                final snackBar = SnackBar(
+                                  content: Text('Complete existing item!'),
+                                  duration: Duration(seconds: 3),
+                                );
+                                Scaffold.of(context).showSnackBar(snackBar);
+                              }
+                              else {
+                                itemList.add(new ItemInfo(
+                                  nameOnChanged: (value) {
+                                    setState(() {
+                                      item['name'] = value;
+                                    });
+                                  },
+                                  qtyOnChanged: (value) {
+                                    setState(() {
+                                      item['qty'] = value;
+                                    });
+                                  },
+                                  unitOnChanged: (value) {
+                                    setState(() {
+                                      item['unit'] = value;
+                                    });
+                                  },
+                                  priceOnChanged: (value) {
+                                    item['price'] = value;
+                                  },
+                                ));
+                                bill.itemList.add(item);
+                                itemCount++;
+                              }
+                            }
                           });
                         },
                       ),
@@ -96,7 +170,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
               //Items List
               Column(
                 children: itemList,
-              ),
+              ), //Item list
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,9 +179,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
                   Row(
                     children: [
                       IconButton(
-                        onPressed: (){
+                        onPressed: () {
                           print("delete");
-                          if(chargesList.length > 0){
+                          if (chargesList.length > 0) {
                             setState(() {
                               chargesList.removeLast();
                             });
@@ -137,74 +211,27 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Discount", style: TextStyle(fontSize: 16)),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: (){
-                          print("delete");
-                          if(discountList.length > 0){
-                            setState(() {
-                              discountList.removeLast();
-                            });
-                          }
-                        },
-                        icon: Icon(Icons.delete_rounded),
-                        iconSize: 18,
-                        color: Colors.grey[700],
-                      ),
-                      AddButton(
-                        buttonText: "Add",
-                        onPressed: () {
-                          setState(() {
-                            discountList.add(Discounts());
-                          });
-                        },
-                      ),
-                    ],
+                  Expanded(
+                      flex: 2,
+                      child: Text("Discount", style: TextStyle(fontSize: 16))),
+                  Expanded(
+                    child: CustomInputField(
+                      placeholder: "\u20B9",
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {},
+                    ),
                   ),
-
                 ],
               ), //Discount
-              //List of Discounts
-              Column(
-                children: discountList,
-              ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(flex: 2,child: Text("GST", style: TextStyle(fontSize: 16))),
-                  _setGST != true ? AddButton(
-                    buttonText: "Add",
-                    onPressed: () {
-                      setState(() {
-                        _setGST = true;
-                      });
-                    },
-                  ) :
-                  Expanded(
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: (){
-                              setState(() {
-                                _setGST = false;
-                              });
-                          },
-                          icon: Icon(Icons.delete_rounded),
-                          iconSize: 18,
-                          color: Colors.grey[700],
-                        ),
-                        Expanded(
-                          child: CustomInputField(
-                            placeholder: "%",
-                            onChanged: (value) {},
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Text("GST", style: TextStyle(fontSize: 16)),
+                  Text(
+                    "18%",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  )
                 ],
               ), //GST
               SizedBox(height: 10),
@@ -349,9 +376,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> with AutomaticKeepAliveCl
 }
 
 class ItemInfo extends StatelessWidget {
+  ItemInfo(
+      {this.nameOnChanged,
+      this.qtyOnChanged,
+      this.unitOnChanged,
+      this.priceOnChanged});
+  final Function nameOnChanged, qtyOnChanged, unitOnChanged, priceOnChanged;
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 40,
       margin: EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
@@ -359,7 +393,7 @@ class ItemInfo extends StatelessWidget {
             flex: 4,
             child: CustomInputField(
               placeholder: "Name",
-              onChanged: (value) {},
+              onChanged: nameOnChanged,
             ),
           ),
           SizedBox(width: 5),
@@ -367,22 +401,22 @@ class ItemInfo extends StatelessWidget {
             child: CustomInputField(
               keyboardType: TextInputType.number,
               placeholder: "Qty",
-              onChanged: (value) {},
+              onChanged: qtyOnChanged,
             ),
           ),
           SizedBox(width: 5),
           Expanded(
             child: CustomInputField(
               placeholder: "Kg",
-              onChanged: (value) {},
+              onChanged: unitOnChanged,
             ),
           ),
           SizedBox(width: 5),
           Expanded(
             child: CustomInputField(
-              placeholder: "\$",
+              placeholder: "\u20b9",
               keyboardType: TextInputType.number,
-              onChanged: (value) {},
+              onChanged: priceOnChanged,
             ),
           ),
         ],
@@ -402,33 +436,6 @@ class Charges extends StatelessWidget {
             flex: 2,
             child: CustomInputField(
               placeholder: "Charge name",
-              onChanged: (value) {},
-            ),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: CustomInputField(
-              placeholder: "\$",
-              onChanged: (value) {},
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Discounts extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            flex: 2,
-            child: CustomInputField(
-              placeholder: "Discount name",
               onChanged: (value) {},
             ),
           ),

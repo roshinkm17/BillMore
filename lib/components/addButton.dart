@@ -8,10 +8,17 @@ class AddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 60,
+      height: 30,
       child: FlatButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         onPressed: onPressed,
-        child: Text(buttonText, style: TextStyle
-          (color: Colors.white),),
+        child: Text(
+          buttonText,
+          style: TextStyle(color: Colors.white),
+        ),
         color: buttonColor,
       ),
     );

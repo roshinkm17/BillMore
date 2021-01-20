@@ -29,66 +29,105 @@ class _RegistrationScreenOneState extends State<RegistrationScreenOne> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Are you registered under GST?", style: TextStyle(fontSize: 18),),
-                  SizedBox(height: 10),
-                  DropdownButton(
-                    underline: Container(
-                      height: 2,
-                      color: Colors.black,
+                  SizedBox(height: 20),
+                  DropdownButtonHideUnderline(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: ShapeDecoration(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            color: Colors.black
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                        )
+                      ),
+                      child: DropdownButton(
+                        // underline: Container(
+                        //   height: 2,
+                        //   color: Colors.black,
+                        // ),
+                        value: _gstReg,
+                        onChanged: (newValue){
+                          setState(() {
+                            _gstReg = newValue;
+                          });
+                        },
+                        items: _gstRegisered.map((option){
+                          return DropdownMenuItem(
+                            child: new Text(option),
+                            value: option,
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    value: _gstReg,
-                    onChanged: (newValue){
-                      setState(() {
-                        _gstReg = newValue;
-                      });
-                    },
-                    items: _gstRegisered.map((option){
-                      return DropdownMenuItem(
-                        child: new Text(option),
-                        value: option,
-                      );
-                    }).toList(),
                   ),
+                  SizedBox(height: 20),
+                  Divider(thickness: 2),
                   SizedBox(height: 20),
                   Text("Do you need assistance on registration with GST?", style: TextStyle(fontSize: 18),),
-                  SizedBox(height: 10),
-                  DropdownButton(
-                    underline: Container(
-                      height: 2,
-                      color: Colors.black,
+                  SizedBox(height: 20),
+                  DropdownButtonHideUnderline(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: ShapeDecoration(
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(30),
+                        )
+                      ),
+                      child: DropdownButton(
+                        underline: Container(
+                          height: 2,
+                          color: Colors.black,
+                        ),
+                        value: _gstHelp,
+                        onChanged: (newValue){
+                          setState(() {
+                            _gstHelp = newValue;
+                          });
+                        },
+                        items: _gstAssistance.map((option){
+                          return DropdownMenuItem(
+                            child: new Text(option),
+                            value: option,
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    value: _gstHelp,
-                    onChanged: (newValue){
-                      setState(() {
-                        _gstHelp = newValue;
-                      });
-                    },
-                    items: _gstAssistance.map((option){
-                      return DropdownMenuItem(
-                        child: new Text(option),
-                        value: option,
-                      );
-                    }).toList(),
                   ),
                   SizedBox(height: 20),
+                  Divider(thickness: 2),
+                  SizedBox(height: 20),
                   Text("What is the type of Business?", style: TextStyle(fontSize: 18),),
-                  SizedBox(height: 10),
-                  DropdownButton(
-                    underline: Container(
-                      height: 2,
-                      color: Colors.black,
+                  SizedBox(height: 20),
+                  DropdownButtonHideUnderline(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: ShapeDecoration(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: BorderSide(color: Colors.black)
+                        )
+                      ),
+                      child: DropdownButton(
+                        underline: Container(
+                          height: 2,
+                          color: Colors.black,
+                        ),
+                        value: _type,
+                        onChanged: (newValue){
+                          setState(() {
+                            _type = newValue;
+                          });
+                        },
+                        items: _businessType.map((option){
+                          return DropdownMenuItem(
+                            child: new Text(option),
+                            value: option,
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    value: _type,
-                    onChanged: (newValue){
-                      setState(() {
-                        _type = newValue;
-                      });
-                    },
-                    items: _businessType.map((option){
-                      return DropdownMenuItem(
-                        child: new Text(option),
-                        value: option,
-                      );
-                    }).toList(),
                   ),
                 ],
               ),

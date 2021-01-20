@@ -52,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   obscureText: true,
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.black),
                     ),
@@ -70,6 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Navigator.pushNamed(context, routeName);
                     int res = await userLogin(email, password);
                     if(res == 1){
+                      print("getting current user");
+                      var res = await Backendless.userService.currentUser();
+                      print("Got the user $res");
                       Navigator.of(context).pushReplacementNamed(HomeScreen.id);
                     }
                     else{

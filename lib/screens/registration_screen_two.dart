@@ -86,6 +86,7 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with Auto
                     SizedBox(height: 10),
                     TextFormField(
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.black),
                           ),

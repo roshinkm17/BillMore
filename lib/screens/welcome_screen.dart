@@ -18,7 +18,6 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkIfLoggedIn();
   }
@@ -28,9 +27,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       //User already logged in
       print("User found!");
       var isValid = await Backendless.userService.isValidLogin();
+      print("is valid: $isValid");
       if(isValid){
-        String currentUserObjectId = await Backendless.userService.loggedInUser();
-        var user = await  Backendless.data.of("Users").findById(currentUserObjectId);
         Navigator.of(context).pushReplacementNamed(HomeScreen.id);
       }
     }
@@ -52,7 +50,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               width: 600,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/logo.png'),
+                  image: AssetImage('assets/images/logo.png'),
                   fit: BoxFit.cover,
                 )
               ),

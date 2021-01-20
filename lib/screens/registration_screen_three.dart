@@ -49,6 +49,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
     user.email = email;
     user.password = password;
     await Backendless.userService.register(user);
+    await Backendless.userService.login(email, password, true);
   }
 
   @override

@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Biller',
       theme: ThemeData(
+        fontFamily: 'SourceSansPro',
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
