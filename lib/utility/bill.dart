@@ -14,4 +14,11 @@ class Bill{
   var dueDate;
   var gst;
   var invoiceNumber;
+  Bill(){
+    this.totalAmount = "0";
+    this.advanceAmount = "0";
+    this.discount = "0";
+    this.balanceAmount = "0";
+    this.gst = "18";
+  }
 }

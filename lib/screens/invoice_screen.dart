@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:biller/utility/bill.dart';
 import 'package:biller/components/addButton.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import '../constants.dart';
 
 class InvoiceScreen extends StatefulWidget {
@@ -23,11 +24,45 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   DateTime selectedDate = DateTime.now();
   List<Widget> itemList = [];
   List<Widget> chargesList = [];
-  var total = 0 ;
-  var balance = 0;
   bool _isAddressSame = false;
   var itemCount = 0;
   var chargeCount = 0;
+  var gstAmount = 0.0;
+  TextEditingController _controller;
+  initState(){
+    super.initState();
+    setState(() {
+      _controller = TextEditingController(text: "18");
+    });
+  }
+  int refreshAmounts(){
+    bill.totalAmount = 0;
+    for(var item in bill.itemList){
+      if(item['name'] == null || item['qty'] == null || item['unit'] == null || item['price'] == null){
+        return 1;
+      }
+      setState(() {
+        bill.totalAmount = bill.totalAmount + (int.parse(item['price']) * int.parse(item['qty']));
+      });
+    }
+    for(var charge in bill.chargeList){
+      if(charge['amount'] == null || charge['name'] == null){
+        return 1;
+      }
+      else{
+      setState(() {
+        bill.totalAmount = bill.totalAmount + int.parse(charge['amount']);
+      });
+      }
+    }
+    setState(() {
+      gstAmount = ((int.parse(bill.gst))/100)*bill.totalAmount;
+      print(gstAmount);
+      bill.totalAmount = bill.totalAmount - int.parse(bill.discount) + gstAmount;
+      bill.balanceAmount = bill.totalAmount - int.parse(bill.advanceAmount);
+    });
+    return 0;
+  }
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
@@ -385,6 +420,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                         child: Text("GST", style: TextStyle(fontSize: 16))),
                     Expanded(
                       child: CustomInputField(
+                        controller: _controller,
                         placeholder: "%",
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
@@ -411,21 +447,19 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                           color: Colors.green,
                           onPressed: (){
                             print("refresh");
-                            total = 0;
-                            for(var item in bill.itemList){
-                              setState(() {
-                                total = total + int.parse(item['price']);
-                              });
+                            if(refreshAmounts() == 1){
+                              final snackBar = SnackBar(
+                                content: Text('Partially Entered Fields Found. Complete to apply changes'),
+                                duration: Duration(seconds: 3),
+                              );
+                              Scaffold.of(context).showSnackBar(snackBar);
                             }
-                            setState(() {
-                              bill.totalAmount = total;
-                            });
                           },
                         ),
                       ],
                     ),
                     Text(
-                      "\u20b9 $total",
+                      "\u20b9 ${bill.totalAmount}",
                       style: TextStyle(
                           fontSize: 20,
                           color: buttonColor,
@@ -455,6 +489,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                           Expanded(
                             flex: 5,
                             child: CustomInputField(
+                              keyboardType: TextInputType.number,
                               placeholder: "\u20b9 0",
                               onChanged: (value) {
                                 setState(() {
@@ -477,9 +512,27 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Balance", style: TextStyle(fontSize: 16)),
+                    Row(
+                      children: [
+                        Text("Balance", style: TextStyle(fontSize: 16)),
+                        IconButton(
+                          icon: Icon(Icons.refresh),
+                          color: Colors.green,
+                          onPressed: (){
+                            print("refresh");
+                            if(refreshAmounts() == 1){
+                              final snackBar = SnackBar(
+                                content: Text('Partially Entered Fields Found. Complete to apply changes'),
+                                duration: Duration(seconds: 3),
+                              );
+                              Scaffold.of(context).showSnackBar(snackBar);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                     Text(
-                      "\u20b9 $balance",
+                      "\u20b9 ${bill.balanceAmount}",
                       style: TextStyle(
                           fontSize: 20,
                           color: buttonColor,
