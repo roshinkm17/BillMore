@@ -31,14 +31,11 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   TextEditingController _controller;
   initState(){
     super.initState();
-    setState(() {
-      _controller = TextEditingController(text: "18");
-    });
   }
   int refreshAmounts(){
     bill.totalAmount = 0;
     for(var item in bill.itemList){
-      if(item['name'] == null || item['qty'] == null || item['unit'] == null || item['price'] == null){
+      if(item['name'] == null || item['qty'] == null || item['unit'] == null || item['price'] == null || item['hsn'] ==  null){
         return 1;
       }
       setState(() {
@@ -88,7 +85,9 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                       child: CustomInputField(
                         placeholder: "Invoice Number",
                         onChanged: (value) {
-                          bill.invoiceNumber = value;
+                          setState(() {
+                            bill.invoiceNumber = value;
+                          });
                         },
                       ),
                     ),
@@ -174,6 +173,10 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                         ],
                       ),
                 SizedBox(height: 20),
+                Divider(
+                  color: Colors.black,
+                  thickness: 2,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -226,7 +229,14 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                     });
                                   },
                                   priceOnChanged: (value) {
-                                    item['price'] = value;
+                                    setState(() {
+                                      item['price'] = value;
+                                    });
+                                  },
+                                  hsnOnChanged: (value){
+                                    setState(() {
+                                      item['hsn'] = value;
+                                    });
                                   },
                                 ));
                                 bill.itemList.add(item);
@@ -237,12 +247,13 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                               if (itemCount > 0) {
                                 if (bill.itemList[itemCount - 1]['name'] ==
                                         null ||
-                                    bill.itemList[itemCount - 1]
-                                            ['qty'] ==
+                                    bill.itemList[itemCount - 1]['qty'] ==
                                         null ||
                                     bill.itemList[itemCount - 1]['unit'] ==
                                         null ||
                                     bill.itemList[itemCount - 1]['price'] ==
+                                        null ||
+                                    bill.itemList[itemCount - 1]['hsn'] ==
                                         null) {
                                   final snackBar = SnackBar(
                                     content: Text('Complete existing item!'),
@@ -268,7 +279,14 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                                       });
                                     },
                                     priceOnChanged: (value) {
-                                      item['price'] = value;
+                                      setState(() {
+                                        item['price'] = value;
+                                      });
+                                    },
+                                    hsnOnChanged: (value){
+                                      setState(() {
+                                        item['hsn'] = value;
+                                      });
                                     },
                                   ));
                                   bill.itemList.add(item);
@@ -420,8 +438,7 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                         child: Text("GST", style: TextStyle(fontSize: 16))),
                     Expanded(
                       child: CustomInputField(
-                        controller: _controller,
-                        placeholder: "%",
+                        placeholder: "18%(default)",
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
                           bill.gst = value;
@@ -623,43 +640,60 @@ class ItemInfo extends StatelessWidget {
       {this.nameOnChanged,
       this.qtyOnChanged,
       this.unitOnChanged,
-      this.priceOnChanged});
-  final Function nameOnChanged, qtyOnChanged, unitOnChanged, priceOnChanged;
+      this.priceOnChanged,
+      this.hsnOnChanged});
+  final Function nameOnChanged, qtyOnChanged, unitOnChanged, priceOnChanged, hsnOnChanged;
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 3),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            flex: 4,
-            child: CustomInputField(
-              placeholder: "Name",
-              onChanged: nameOnChanged,
-            ),
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: CustomInputField(
+                  placeholder: "Name",
+                  onChanged: nameOnChanged,
+                ),
+              ),
+              SizedBox(width: 5),
+              Expanded(
+                child: CustomInputField(
+                  keyboardType: TextInputType.number,
+                  placeholder: "Qty",
+                  onChanged: qtyOnChanged,
+                ),
+              ),
+              SizedBox(width: 5),
+              Expanded(
+                child: CustomInputField(
+                  placeholder: "Ut",
+                  onChanged: unitOnChanged,
+                ),
+              ),
+              SizedBox(width: 5),
+              Expanded(
+                child: CustomInputField(
+                  placeholder: "\u20b9",
+                  keyboardType: TextInputType.number,
+                  onChanged: priceOnChanged,
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 5),
-          Expanded(
-            child: CustomInputField(
-              keyboardType: TextInputType.number,
-              placeholder: "Qty",
-              onChanged: qtyOnChanged,
-            ),
-          ),
-          SizedBox(width: 5),
-          Expanded(
-            child: CustomInputField(
-              placeholder: "Kg",
-              onChanged: unitOnChanged,
-            ),
-          ),
-          SizedBox(width: 5),
-          Expanded(
-            child: CustomInputField(
-              placeholder: "\u20b9",
-              keyboardType: TextInputType.number,
-              onChanged: priceOnChanged,
-            ),
+          SizedBox(height: 5),
+          Row(
+            children: [
+              Expanded(
+                child: CustomInputField(
+                  placeholder: "HSN",
+                  keyboardType: TextInputType.number,
+                  onChanged: hsnOnChanged,
+                ),
+              ),
+            ],
           ),
         ],
       ),
