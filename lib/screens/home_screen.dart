@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void getCurrentUser() async {
     print("getting current user");
     String currentUserObjectId = await Backendless.userService.loggedInUser();
-    var user = await  Backendless.data.of("Users").findById(currentUserObjectId);
+    var user = await Backendless.data.of("Users").findById(currentUserObjectId);
     print(user);
     setState(() {
       currentUserEmail = user['email'];
@@ -38,9 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: buttonColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings_rounded, color: Colors.white,),
+            icon: Icon(
+              Icons.settings_rounded,
+              color: Colors.white,
+            ),
             iconSize: 20,
-            onPressed: (){
+            onPressed: () {
               //to Settings
             },
           ),
@@ -73,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 20),
                   MainButton(
                     buttonText: "View Invoices",
-                    onPressed: (){
+                    onPressed: () {
                       print("view invoices");
                     },
                   ),
