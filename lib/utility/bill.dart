@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Bill{
-  String nameOfParty;
+  String nameOfShippingParty;
+  String addressOfShippingParty;
+  String nameOfBillingParty;
+  String addressOfBillingParty;
   var itemList = [];
   var chargeList = [];
   var discount;
@@ -9,4 +12,6 @@ class Bill{
   var totalAmount;
   var balanceAmount;
   var dueDate;
+  var gst;
+  var invoiceNumber;
 }

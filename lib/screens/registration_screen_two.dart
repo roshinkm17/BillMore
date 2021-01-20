@@ -143,6 +143,5 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with Auto
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
