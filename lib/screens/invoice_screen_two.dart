@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
-import 'file:///C:/Users/Roshin/Desktop/Biller/App/biller/lib/utility/pdf_generater.dart';
+import 'package:biller/utility/pdf_generater.dart';
 import 'package:biller/screens/pdf_preview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,9 +90,13 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   getDetailsFromDatabase() async{
     DataQueryBuilder queryBuilder = DataQueryBuilder();
     queryBuilder.whereClause = "email = 'abcd@gmail.com'";
-    var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
-    print("Details from database aquired!");
-    return userDetails;
+    try{
+      var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
+      print("Details from database aquired!");
+      return userDetails;
+    }catch(e){
+      print(e);
+    }
   }
   roundNumbers(){
     setState(() {

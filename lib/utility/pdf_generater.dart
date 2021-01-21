@@ -188,7 +188,7 @@ Future savePdf() async {
   Directory documentDirectory = await getApplicationDocumentsDirectory();
   String documentPath = documentDirectory.path;
   print('Document path' + documentPath);
-  File file = File("/storage/emulated/0/Download/exmaple.pdf");
+  File file = File("/storage/emulated/0/Download/example.pdf");
   file.writeAsBytesSync(await pdf.save());
 }
 
