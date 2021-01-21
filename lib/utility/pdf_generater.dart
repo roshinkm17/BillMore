@@ -32,7 +32,7 @@ writeOnPdf({Bill bill, var dbDetails, var gstAmount, bool isAddressSame}) async 
     newItem.add(item['name']);//name
     newItem.add(item['qty']);//qty
     newItem.add(item['price']);//mrp
-    var taxAmt =  double.parse((item['price'] * item['qty'])*(bill.gstPercentage/100).toStringAsFoxed(1));
+    var taxAmt =  double.parse((item['price'] * item['qty'])*(bill.gstPercentage/100).toStringAsFixed(1));
     newItem.add(taxAmt);
     newItem.add((item['price'] * item['qty']) + taxAmt);//total amount
     items.add(newItem);
