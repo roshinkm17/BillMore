@@ -1,7 +1,8 @@
 import 'package:biller/components/mainButton.dart';
-import 'package:biller/screens/invoice_screen.dart';
+import 'package:biller/screens/invoice_screen_two.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:biller/screens/invoice_screen_one.dart';
 
 class LayoutScreen extends StatefulWidget {
   LayoutScreen({Key key}) : super(key: key);
@@ -67,7 +68,8 @@ class _LayoutScreenState extends State<LayoutScreen> {
             MainButton(
               buttonText: "Continue",
               onPressed: (){
-                Navigator.pushNamed(context, InvoiceScreen.id);
+                // Navigator.pushNamed(context, InvoiceScreen.id);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => InvoiceScreenOne()));
               },
             ),
             ],

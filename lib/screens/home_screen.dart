@@ -6,8 +6,9 @@ import 'package:biller/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key key}) : super(key: key);
+  HomeScreen({Key key, this.currentUseremail}) : super(key: key);
   static String id = "home_screen_id";
+  final String currentUseremail;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -17,20 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
   }
-
-  void getCurrentUser() async {
-    print("getting current user");
-    String currentUserObjectId = await Backendless.userService.loggedInUser();
-    var user = await Backendless.data.of("Users").findById(currentUserObjectId);
-    print(user);
-    setState(() {
-      currentUserEmail = user['email'];
-    });
-  }
-
-  String currentUserEmail;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         automaticallyImplyLeading: false,
-        title: Text(currentUserEmail == null ? "" : currentUserEmail),
+        title: Text(widget.currentUseremail == null ? "" : widget.currentUseremail),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: buttonColor,

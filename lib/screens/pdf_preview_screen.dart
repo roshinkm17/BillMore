@@ -1,9 +1,11 @@
+import 'package:biller/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 
 class PdfPreviewScreen extends StatefulWidget {
   final String path;
-  const PdfPreviewScreen({Key key, this.path}) : super(key: key);
+  final String docName;
+  const PdfPreviewScreen({Key key, this.path, this.docName}) : super(key: key);
 
   @override
   _PdfPreviewScreenState createState() => _PdfPreviewScreenState();
@@ -18,20 +20,9 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-        ],
-      ),
       appBar: AppBar(
-        title: Text("My Document"),
+        title: Text(widget.docName),
+        backgroundColor: buttonColor,
       ),
       body: Stack(
         children: <Widget>[
@@ -64,31 +55,6 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                   child: CircularProgressIndicator(),
                 )
               : Offstage()
-        ],
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          _currentPage > 0
-              ? FloatingActionButton.extended(
-                  backgroundColor: Colors.red,
-                  label: Text("Go to ${_currentPage - 1}"),
-                  onPressed: () {
-                    _currentPage -= 1;
-                    _pdfViewController.setPage(_currentPage);
-                  },
-                )
-              : Offstage(),
-          _currentPage + 1 < _totalPages
-              ? FloatingActionButton.extended(
-                  backgroundColor: Colors.green,
-                  label: Text("Go to ${_currentPage + 1}"),
-                  onPressed: () {
-                    _currentPage += 1;
-                    _pdfViewController.setPage(_currentPage);
-                  },
-                )
-              : Offstage(),
         ],
       ),
     );

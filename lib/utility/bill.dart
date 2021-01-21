@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Bill{
   String nameOfShippingParty;
@@ -12,13 +13,20 @@ class Bill{
   var totalAmount;
   var balanceAmount;
   var dueDate;
-  var gst;
+  var gstPercentage;
+  var gstAmount;
+  var taxableAmount;
   var invoiceNumber;
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
   Bill(){
-    this.totalAmount = "0";
-    this.advanceAmount = "0";
-    this.discount = "0";
-    this.balanceAmount = "0";
-    this.gst = "18";
+    this.dueDate = formatter.format(DateTime.now());
+    this.discount = 0;
+    this.taxableAmount = 0;
+    this.totalAmount = 0.0;
+    this.advanceAmount = 0;
+    this.discount = 0;
+    this.balanceAmount = 0.0;
+    this.gstPercentage = 18;
+    this.gstAmount = 0.0;
   }
 }

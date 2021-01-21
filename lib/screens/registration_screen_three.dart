@@ -25,6 +25,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
   final _formKey = GlobalKey<FormState>();
   uploadDetails(Company companyDetails, Bank bankDetails) async{
     Map details = {
+      "email": companyDetails.email,
       "name": companyDetails.name,
       "phone": companyDetails.phone,
       "mobile": companyDetails.mobile,
@@ -42,6 +43,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
     await Backendless.files.upload(companyDetails.logo, "/${companyDetails.email}/logo");
     await Backendless.files.upload(companyDetails.signature, "/${companyDetails.email}/signature");
     print(details);
+    print("database uploaded!");
   }
 
   void registerUser(email, password) async{
@@ -49,6 +51,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
     user.email = email;
     user.password = password;
     await Backendless.userService.register(user);
+    await Backendless.userService.logout();
     await Backendless.userService.login(email, password, true);
   }
 
@@ -237,7 +240,6 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                           Scaffold.of(context).showSnackBar(snackBar);
                         }
                       }
-                      print("Upload Done");
                     },
               ),
                 ],

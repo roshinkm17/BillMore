@@ -30,13 +30,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if(token != null && token.isNotEmpty){
       //User already logged in
       print("User found!");
-      var isValid = await Backendless.userService.isValidLogin();
-      print("is valid: $isValid");
-      if(isValid){
-        setState(() {
-          _isSaving = false;
-        });
-        Navigator.of(context).pushReplacementNamed(HomeScreen.id);
+      try{
+        var isValid = await Backendless.userService.isValidLogin();
+        String currentUserObjectId = await Backendless.userService.loggedInUser();
+        var user = await Backendless.data.of("Users").findById(currentUserObjectId);
+        print("is valid: $isValid");
+        print("user : $user");
+        if(isValid){
+          setState(() {
+            _isSaving = false;
+          });
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: user['email'],)));
+        }
+      }catch(e){
+        print(e);
       }
     }
     else{

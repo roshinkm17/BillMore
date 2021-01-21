@@ -1,14 +1,42 @@
 import 'dart:io';
-
+import 'package:biller/utility/bill.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 final pdf = pw.Document();
-
-writeOnPdf() async {
-  //
+writeOnPdf({Bill bill, var dbDetails, var gstAmount, bool isAddressSame}) async {
+  List<List<dynamic>> amountSection = [
+    <String>['   ', '  ', '   '],
+    <String>['Taxable Amount', '  ', '${bill.taxableAmount}'],
+    <String>['CGST ', '  ', '${double.parse((bill.gstAmount/2).toStringAsFixed(1))}'],
+    <String>['SGST ', ' ', '${double.parse((bill.gstAmount/2).toStringAsFixed(1))}'],
+    <String>['Discount', '  ', '- ${bill.discount}'],
+    <String>['Grand Total', '  ', '${bill.totalAmount}'],
+    <String>['Advance', '  ', '- ${bill.advanceAmount}'],
+    <String>['Balance', '  ', '${bill.balanceAmount}'],
+  ];
+  List<List<dynamic>> items = [];
+  List<List<dynamic>> charges = [];
+  for(var charge in bill.chargeList){
+      var newCharge = [];
+      newCharge.add(charge['name']);
+      newCharge.add(' ');
+      newCharge.add(charge['amount']);
+      charges.add(newCharge);
+    }
+    amountSection.insertAll(3,charges);
+  for (var item in bill.itemList) {
+    var newItem = [];
+    newItem.add(item['name']);//name
+    newItem.add(item['qty']);//qty
+    newItem.add(item['price']);//mrp
+    var taxAmt =  double.parse((item['price'] * item['qty'])*(bill.gstPercentage/100).toStringAsFoxed(1));
+    newItem.add(taxAmt);
+    newItem.add((item['price'] * item['qty']) + taxAmt);//total amount
+    items.add(newItem);
+  }
   final profileImage = pw.MemoryImage(
       (await rootBundle.load('assets/images/ic_launcher.png'))
           .buffer
@@ -28,21 +56,21 @@ writeOnPdf() async {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'ABC LTD ',
+                  dbDetails['name'],
                   style: pw.TextStyle(
                       fontWeight: pw.FontWeight.bold, fontSize: 25),
                 ),
-                pw.Text('22, asdasd, sadasda, Bagalore',
+                pw.Text(dbDetails['address'],
                     style: pw.TextStyle(fontSize: 16)),
                 pw.Row(
                   children: [
                     pw.Text(
-                      'Mobile: 123456789',
+                      "MOB: ${dbDetails['mobile']}",
                       style: pw.TextStyle(fontSize: 16),
                     ),
                     pw.SizedBox(width: 25),
                     pw.Text(
-                      'GSTIN: 00ABCDe000000F0G',
+                      "GST: ${dbDetails['gstNumber']}",
                       style: pw.TextStyle(fontSize: 16),
                     ),
                   ],
@@ -54,7 +82,8 @@ writeOnPdf() async {
         //
         //
         //
-        pw.Divider(thickness: 10),
+        pw.SizedBox(height: 20),
+        pw.Divider(thickness: 5),
         pw.SizedBox(height: 20),
         //
         //
@@ -66,33 +95,31 @@ writeOnPdf() async {
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('Invoice No.: ABCD01'),
-                pw.Text('Bill To : '),
-                pw.Text('LalKrishna'),
-                pw.Text('123, ABC Layout,'),
-                pw.Text('DEF Nagar, Bangalore'),
-                pw.Text('GSTN: 00ABCDR00000G0J'),
+                pw.Text('Invoice No.: ${bill.invoiceNumber}'),
+                pw.Text(isAddressSame ? 'Bill and Ship to' : 'Bill to'),
+                pw.Text('${bill.nameOfShippingParty}'),
+                pw.Text('${bill.addressOfShippingParty}'),
               ],
             ),
-            pw.Column(
+            isAddressSame ? pw.SizedBox(height: 0) : pw.Column(
               mainAxisAlignment: pw.MainAxisAlignment.center,
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text('                  '),
                 pw.Text('                  '),
-                pw.Text('Ship To : '),
-                pw.Text('LalKrishna'),
-                pw.Text('123, ABC Layout,'),
-                pw.Text('DEF Nagar, Bangalore'),
+                pw.Text('                   '),
+                pw.Text('Ship To'),
+                pw.Text('${bill.nameOfBillingParty}'),
+                pw.Text('${bill.addressOfBillingParty}'),
               ],
             ),
-            pw.Text('Invoice Date: 19-01-2020'),
+            pw.Text('Invoice Due Date: ${bill.dueDate}'),
           ],
-        ),
+        ), //
         //
         //
-        //
-        pw.Divider(thickness: 10),
+        pw.SizedBox(height: 20),
+        pw.Divider(thickness: 5),
         pw.SizedBox(height: 20),
         //
         //
@@ -101,14 +128,13 @@ writeOnPdf() async {
           context: context,
           cellAlignment: pw.Alignment.center,
           headers: <String>['ITEM', 'QTY.', 'MRP', 'TAX', 'AMOUNT'],
-          data: const <List<String>>[
-            <String>['1993', 'PDF 1.0', 'Acrobat 1', 'sda', 'asdad'],
-          ],
+          data: items,
         ),
         //
         //
         //
-        pw.Divider(thickness: 10),
+        pw.SizedBox(height: 20),
+        pw.Divider(thickness: 5),
         pw.SizedBox(height: 20),
         //
         //
@@ -122,13 +148,14 @@ writeOnPdf() async {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text('Bank Details'),
-                pw.Text('Name: asdsad'),
-                pw.Text('IFSE Code HDFCXXX000'),
-                pw.Text('Account No.: 000000000'),
-                pw.Text('Bank and Branch : sdad bank.'),
+                pw.Text(dbDetails['bankName']),
+                pw.Text('IFSE Code: ${dbDetails['ifscCode']}'),
+                pw.Text('Account No.: ${dbDetails['accNumber']}'),
+                pw.Text('Bank and Branch : ${dbDetails['bankName']} ${dbDetails['branch']}'),
                 pw.SizedBox(height: 25),
                 pw.Text('Terms and conditions : '),
-                pw.Text('adsdagsdgjagdjsagjdgashgdjagjsdgjagdjasgdjagh'),
+                pw.Text(
+                    'The terms and conditions for this invoice are written here.'),
               ],
             ),
             pw.Table.fromTextArray(
@@ -137,17 +164,7 @@ writeOnPdf() async {
               cellStyle: pw.TextStyle(fontSize: 16),
               context: context,
               cellAlignment: pw.Alignment.centerRight,
-              data: const <List<String>>[
-                <String>['   ', '  ', '   '],
-                <String>['Taxable Amount', '  ', '400.00'],
-                <String>['CGST@9%', '  ', '9.00'],
-                <String>['SGST', ' ', '9.00'],
-                <String>['Delivery Charge', '  ', '50.00'],
-                <String>['Discount', '  ', '-10.00'],
-                <String>['Grand Total', '  ', '458.00'],
-                <String>['Advance', '  ', '-100.00'],
-                <String>['Balance', '  ', '358.00'],
-              ],
+              data: amountSection,
             ),
             pw.SizedBox(width: 25)
           ],
@@ -169,27 +186,9 @@ writeOnPdf() async {
 
 Future savePdf() async {
   Directory documentDirectory = await getApplicationDocumentsDirectory();
-
   String documentPath = documentDirectory.path;
   print('Document path' + documentPath);
-  File file = File("$documentPath/example.pdf");
-
+  File file = File("/storage/emulated/0/Download/exmaple.pdf");
   file.writeAsBytesSync(await pdf.save());
 }
 
-// onPressed: () async {
-//  writeOnPdf();
-//  await savePdf();
-//
-// Directory documentDirectory = await getApplicationDocumentsDirectory();
-//
-// String documentPath = documentDirectory.path;
-//
-// String fullPath = "$documentPath/example.pdf";
-// print(fullPath);
-// Navigator.push(context,
-// MaterialPageRoute(
-// builder: (context) => PdfPreviewScreen(
-// path: fullPath,
-// )));
-// },
