@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
-import 'package:biller/utility/pdf_generater.dart';
-import 'package:biller/screens/pdf_preview_screen.dart';
+import 'package:biller/utility/pdf_generater.dart' as pd;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:biller/utility/bill.dart';
@@ -23,9 +26,7 @@ class InvoiceScreen extends StatefulWidget {
   _InvoiceScreenState createState() => _InvoiceScreenState();
 }
 
-class _InvoiceScreenState extends State<InvoiceScreen>
-    with AutomaticKeepAliveClientMixin {
-
+class _InvoiceScreenState extends State<InvoiceScreen> {
 
   final _formKey = GlobalKey<FormState>();
   Bill bill = Bill();
@@ -36,14 +37,179 @@ class _InvoiceScreenState extends State<InvoiceScreen>
   var itemCount = 0;
   var chargeCount = 0;
   bool _isSaving = false;
+  int count = 0;
 
 
+  Future<void> _createPDF({var name}) async {
+    PdfDocument document = PdfDocument();
+    final PdfPage page = document.pages.add();
+    final pageWidth = page.size.width;
+    final pageHeight = page.size.height;
+
+
+
+    final Uint8List imageData = File('/storage/emulated/0/Download/image.png').readAsBytesSync();
+    final PdfBitmap image = PdfBitmap(imageData);
+    page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 200, 100));
+    final PdfOrderedList topListDetails = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          'Name: Tetra Infotech',
+          'Address: Banglore',
+          'Mobile: 900009342',
+          'GSTN: HGDJH293345345'
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    topListDetails.draw(
+      page: page,
+      bounds: Rect.fromLTWH(200, 0, 500, 150),
+    );
+    page.graphics.drawLine(PdfPens.black, Offset(0, 120), Offset(page.size.width, 120));
+    final PdfOrderedList shippingAddress = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          'Invoice number: ${bill.invoiceNumber}',
+          'Bill/Ship to: ${bill.nameOfShippingParty}',
+          'Address: ${bill.addressOfShippingParty}',
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    shippingAddress.draw(
+      page: page,
+      bounds: Rect.fromLTWH(-10, 140, 300, 150),
+    );
+    page.graphics.drawString("Invoice Due Date: ${bill.dueDate}", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds: Rect.fromLTWH(320, 140, 500, 100));
+    page.graphics.drawLine(PdfPens.black, Offset(0, 230), Offset(page.size.width, 230));
+    final PdfGrid grid = PdfGrid();
+    grid.columns.add(count: 4);
+    final PdfGridRow headerRow = grid.headers.add(1)[0];
+    headerRow.cells[0].value = 'Items';
+    headerRow.cells[1].value = 'Qty';
+    headerRow.cells[2].value = 'Tax';
+    headerRow.cells[3].value = 'Amount';
+    headerRow.style.font =
+        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+    PdfGridRow row = grid.rows.add();
+    row.cells[0].value = 'ALFKI';
+    row.cells[1].value = 'Maria Anders';
+    row.cells[2].value = 'Germany';
+    row.cells[3].value = 'Germany';
+    row = grid.rows.add();
+    row.cells[0].value = 'ANATR';
+    row.cells[1].value = 'Ana Trujillo';
+    row.cells[2].value = 'Mexico';
+    row.cells[3].value = 'Germany';
+    row = grid.rows.add();
+    row.cells[0].value = 'ANTON';
+    row.cells[1].value = 'Antonio Mereno';
+    row.cells[2].value = 'Mexico';
+    row.cells[3].value = 'Germany';
+    grid.style.cellPadding = PdfPaddings(left: 10, top: 5);
+    grid.allowRowBreakingAcrossPages = true;
+    grid.draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            0, 260, page.getClientSize().width, page.getClientSize().height));
+    page.graphics.drawLine(PdfPens.black, Offset(0, 290 + (23.0*grid.rows.count)), Offset(page.size.width, 290 + (23.0*grid.rows.count)));
+    final PdfOrderedList bankDetails = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          'Bank Details',
+          'Bank Name: XXXXX',
+          'Bill/Ship to: XXXX',
+          'Address:XXXXXX',
+          'Terms and Conditions',
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    bankDetails.draw(
+      page: page,
+      bounds: Rect.fromLTWH(-10, 290 + (23.0*grid.rows.count)+ 30, 200, 200),
+    );
+    const String terms =
+        'Adobe Systems Incorporated\'s Portable Document Format (PDF) is the de facto'
+        'standard for the accurate, reliable, and platform-independent representation of a paged'
+        'document. It\'s the only universally accepted file format that allows pixel-perfect layouts.'
+        'In addition, PDF supports user interaction and collaborative workflows that are not'
+        'possible with printed documents.';
+    final PdfLayoutResult layoutResult = PdfTextElement(
+        text: terms,
+        font: PdfStandardFont(PdfFontFamily.helvetica, 12),
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)))
+        .draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            15, 450 + (23.0*grid.rows.count), page.getClientSize().width/2, page.getClientSize().height),
+        format: PdfLayoutFormat(layoutType: PdfLayoutType.paginate));
+    final PdfGrid newGrid = PdfGrid();
+    newGrid.columns.add(count: 2);
+    final PdfGridRow header = newGrid.headers.add(1)[0];
+    PdfGridCellStyle gridCellStyle = PdfGridCellStyle();
+    header.cells[0].value = 'Items';
+    header.cells[1].value = 'Qty';
+    header.style.font =
+        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+    PdfGridRow r = newGrid.rows.add();
+    r.cells[0].value = 'ALFKI';
+    r.cells[1].value = 'Maria Anders';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'ANATR';
+    r.cells[1].value = 'Ana Trujillo';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'ANTON';
+    r.cells[1].value = 'Antonio Mereno';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'ANTON';
+    r.cells[1].value = 'Antonio Mereno'; r = newGrid.rows.add();
+    r.cells[0].value = 'ANTON';
+    r.cells[1].value = 'Antonio Mereno';
+
+    newGrid.style.cellPadding = PdfPaddings(left: 10, top: 5);
+    newGrid.allowRowBreakingAcrossPages = true;
+    newGrid.draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            300, 320 + (23.0*grid.rows.count), page.getClientSize().width, page.getClientSize().height));
+    page.graphics.drawImage(image,Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 30 +(23*newGrid.rows.count), 50, 50));
+    page.graphics.drawString("Signature", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds:Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 90 +(23*newGrid.rows.count), 200, 100) );
+
+
+
+    List<int> bytes = document.save();
+    document.dispose();
+    final directory = await getExternalStorageDirectory();
+    final path = directory.path;
+    File file = File('$path/table.pdf');
+    await file.writeAsBytes(bytes, flush: true);
+    OpenFile.open('$path/table.pdf');
+  }
   initState(){
     super.initState();
     setState(() {
       bill = widget.bill;
+      bill.itemList = [];
+      bill.chargeList = [];
+      bill.discount = 0.0;
+      bill.gstPercentage = 18;
+      bill.totalAmount = 0.0;
+      bill.advanceAmount = 0.0;
+      bill.balanceAmount = 0.0;
       _isAddressSame = widget.isSame;
-      print(bill.nameOfShippingParty);
     });
   }
   int refreshAmounts(){
@@ -565,32 +731,10 @@ class _InvoiceScreenState extends State<InvoiceScreen>
                         setState(() {
                           _isSaving = true;
                         });
-                        var dbDetails = await getDetailsFromDatabase();
-                        String fullPath = "/storage/emulated/0/Download/example.pdf";
-                        // try{
-                        //   File file = await File(fullPath);
-                        //   await file.delete();
-                        // }catch(e){
-                        //   print("sorry");
-                        // }
-
-                        await writeOnPdf(
-                          bill: bill,
-                          dbDetails: dbDetails[0],
-                          isAddressSame: _isAddressSame,
-                          gstAmount: bill.gstAmount,
-                        );
-                        await savePdf();
-                        print(fullPath);
                         setState(() {
                           _isSaving = false;
                         });
-                        Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => PdfPreviewScreen(
-                                  path: fullPath,
-                                  docName: bill.invoiceNumber,
-                                )));
+                        _createPDF();
                       }
                       //Bill preview screen
                     },
@@ -604,8 +748,6 @@ class _InvoiceScreenState extends State<InvoiceScreen>
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class ItemInfo extends StatelessWidget {
