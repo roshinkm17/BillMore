@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -9,10 +10,13 @@ final pdf = pw.Document();
 writeOnPdf() async {
   //
   final profileImage = pw.MemoryImage(
-      (await rootBundle.load('assets/images/ic_launcher.png')).buffer.asUint8List());
+      (await rootBundle.load('assets/images/ic_launcher.png'))
+          .buffer
+          .asUint8List());
 
   pdf.addPage(pw.MultiPage(
     pageFormat: PdfPageFormat.a4,
+    margin: pw.EdgeInsets.all(32),
     build: (pw.Context context) {
       return <pw.Widget>[
         pw.Row(
@@ -155,7 +159,7 @@ Future savePdf() async {
   Directory documentDirectory = await getApplicationDocumentsDirectory();
 
   String documentPath = documentDirectory.path;
-
+  print('Document path' + documentPath);
   File file = File("$documentPath/example.pdf");
 
   file.writeAsBytesSync(await pdf.save());
