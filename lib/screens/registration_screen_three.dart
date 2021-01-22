@@ -38,6 +38,8 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
       "ifscCode": bankDetails.ifsc,
       "accNumber": bankDetails.accNumber,
       "branch": bankDetails.branch,
+      "signature": _signatureName,
+      "logo": _logoName,
     };
     Backendless.data.of("UserDetails").save(details);
     await Backendless.files.upload(companyDetails.logo, "/${companyDetails.email}/logo");
@@ -53,6 +55,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
     await Backendless.userService.register(user);
     await Backendless.userService.logout();
     await Backendless.userService.login(email, password, true);
+
   }
 
   @override

@@ -1,12 +1,13 @@
 import 'dart:typed_data';
+import 'package:biller/screens/welcome_screen.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
+import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
-import 'package:biller/utility/pdf_generater.dart' as pd;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:biller/utility/bill.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/widgets.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import '../constants.dart';
 import 'package:backendless_sdk/backendless_sdk.dart';
+import 'package:http/http.dart' as http;
 
 class InvoiceScreen extends StatefulWidget {
   InvoiceScreen({Key key, this.bill, this.isSame}) : super(key: key);
@@ -38,6 +40,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   var chargeCount = 0;
   bool _isSaving = false;
   int count = 0;
+  File logoFile, signatureFile;
+  String logoPath, signaturePath;
 
 
   Future<void> _createPDF() async {
@@ -50,7 +54,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
 
 
-    final Uint8List imageData = File('/storage/emulated/0/Download/image.png').readAsBytesSync();
+    final Uint8List imageData = File(logoPath).readAsBytesSync();
     final PdfBitmap image = PdfBitmap(imageData);
     page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 200, 100));
     final PdfOrderedList topListDetails = PdfOrderedList(
@@ -72,10 +76,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       bounds: Rect.fromLTWH(200, 0, 500, 150),
     );
     page.graphics.drawLine(PdfPens.black, Offset(0, 120), Offset(page.size.width, 120));
+    page.graphics.drawString("Invoice number: ${bill.invoiceNumber}", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds: Rect.fromLTWH(0, 130, 500, 100));
     final PdfOrderedList shippingAddress = PdfOrderedList(
         items: PdfListItemCollection(<String>[
-          'Invoice number: ${bill.invoiceNumber}',
-          'Bill/Ship to: ${bill.nameOfShippingParty}',
+          _isAddressSame ? 'Bill/Ship to:': 'Ship to:',
+          '${bill.nameOfShippingParty}'
           'Address: ${bill.addressOfShippingParty}',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
@@ -87,10 +93,31 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         textIndent: 10);
     shippingAddress.draw(
       page: page,
-      bounds: Rect.fromLTWH(-10, 140, 300, 150),
+      bounds: Rect.fromLTWH(-20, 155, 150, 150),
     );
+    if(_isAddressSame == false){
+      final PdfOrderedList billingAddress = PdfOrderedList(
+          items: PdfListItemCollection(<String>[
+            'Bill to:',
+            '${bill.nameOfBillingParty}'
+                'Address: ${bill.addressOfBillingParty}',
+          ]),
+          font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+          marker: PdfOrderedMarker(
+              style: PdfNumberStyle.none,
+              font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+          markerHierarchy: true,
+          format: PdfStringFormat(lineSpacing: 10),
+          textIndent: 10);
+      billingAddress.draw(
+        page: page,
+        bounds: Rect.fromLTWH(150, 155, 150, 150),
+      );
+    }
+
+
     page.graphics.drawString("Invoice Due Date: ${bill.dueDate}", PdfStandardFont(PdfFontFamily.helvetica, 14),
-        bounds: Rect.fromLTWH(320, 140, 500, 100));
+        bounds: Rect.fromLTWH(320, 130, 500, 100));
     page.graphics.drawLine(PdfPens.black, Offset(0, 230), Offset(page.size.width, 230));
     final PdfGrid grid = PdfGrid();
     grid.columns.add(count: 4);
@@ -146,7 +173,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         .draw(
         page: page,
         bounds: Rect.fromLTWH(
-            15, 470 + (23.0*grid.rows.count), page.getClientSize().width/2, page.getClientSize().height),
+            15, 290 + (23.0*grid.rows.count)+ 230, page.getClientSize().width/2, page.getClientSize().height),
         format: PdfLayoutFormat(layoutType: PdfLayoutType.paginate));
     final PdfGrid newGrid = PdfGrid();
     newGrid.columns.add(count: 2);
@@ -156,10 +183,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     r.cells[1].value = '${bill.taxableAmount}';
     r = newGrid.rows.add();
     r.cells[0].value = 'CGST (${bill.gstPercentage/2})%';
-    r.cells[1].value = '${bill.gstAmount}/2';
+    r.cells[1].value = '${bill.gstAmount/2}';
     r = newGrid.rows.add();
     r.cells[0].value = 'SGST (${bill.gstPercentage/2})%';
-    r.cells[1].value = '${bill.gstAmount}/2';
+    r.cells[1].value = '${bill.gstAmount/2}';
     r = newGrid.rows.add();
     for(var charge in bill.chargeList){
       r.cells[0].value = '${charge['name']}';
@@ -184,9 +211,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         page: page,
         bounds: Rect.fromLTWH(
             300, 320 + (23.0*grid.rows.count), page.getClientSize().width, page.getClientSize().height));
-    page.graphics.drawImage(image,Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 30 +(23*newGrid.rows.count), 50, 50));
+    final Uint8List imageDataTwo = File(signaturePath).readAsBytesSync();
+    final PdfBitmap imageTwo = PdfBitmap(imageDataTwo);
+    page.graphics.drawImage(imageTwo,Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 30 +(23*newGrid.rows.count), 50, 50));
     page.graphics.drawString("Signature", PdfStandardFont(PdfFontFamily.helvetica, 14),
-        bounds:Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 90 +(23*newGrid.rows.count), 200, 100) );
+        bounds:Rect.fromLTWH(450, (320 + (23.0*grid.rows.count)) + 90 +(23*newGrid.rows.count), 200, 100) );
 
 
 
@@ -194,12 +223,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     document.dispose();
     final directory = await getExternalStorageDirectory();
     final path = directory.path;
-    File file = File('$path/${bill.invoiceNumber}_biller.pdf');
+    File file = File('$path/bill#_${bill.invoiceNumber}.pdf');
     await file.writeAsBytes(bytes, flush: true);
     setState(() {
       _isSaving = false;
     });
-    OpenFile.open('$path/${bill.invoiceNumber}_biller.pdf');
+    OpenFile.open('$path/bill#_${bill.invoiceNumber}.pdf');
   }
   initState(){
     super.initState();
@@ -257,12 +286,34 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return 0;
   }
   getDetailsFromDatabase() async{
-    BackendlessUser user = await Backendless.userService.currentUser();
+    BackendlessUser user = BackendlessUser();
+    try{
+      user = await Backendless.userService.currentUser();
+      print(user.email);
+    }
+    catch(e){
+      print(e);
+      await Backendless.userService.logout();
+      // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+    }
+
     DataQueryBuilder queryBuilder = DataQueryBuilder();
     queryBuilder.whereClause = "email = '${user.email}'";
     try{
       var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
       print("Details from database aquired!");
+      var urlLogo = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/logo/${userDetails[0]['logo']}";
+      var urlSignature = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/signature/${userDetails[0]['signature']}";
+      var logo = await http.get(urlLogo);
+      var signature = await http.get(urlSignature);
+      logoFile = new File("/storage/emulated/0/Download/${userDetails[0]['logo']}");
+      signatureFile = new File("/storage/emulated/0/Download/${userDetails[0]['signature']}");
+      logoFile.writeAsBytesSync(logo.bodyBytes);
+      signatureFile.writeAsBytesSync(signature.bodyBytes);
+      setState(() {
+        logoPath = "/storage/emulated/0/Download/${userDetails[0]['logo']}";
+        signaturePath = "/storage/emulated/0/Download/${userDetails[0]['signature']}";
+      });
       return userDetails;
     }catch(e){
       print(e);
@@ -276,7 +327,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   @override
-  // ignore: must_call_super
   Widget build(BuildContext context) {
     return Scaffold(
       body: ModalProgressHUD(
@@ -626,7 +676,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                               flex: 5,
                               child: CustomInputField(
                                 keyboardType: TextInputType.number,
-                                placeholder: "\u20b9 0",
+                                placeholder: "\u20b9",
                                 onChanged: (value) {
                                   setState(() {
                                     bill.advanceAmount = double.parse(value);
