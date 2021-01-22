@@ -81,7 +81,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         items: PdfListItemCollection(<String>[
           _isAddressSame ? 'Bill/Ship to:': 'Ship to:',
           '${bill.nameOfShippingParty}',
-          'Address: ${bill.addressOfShippingParty}',
+          '${bill.addressOfShippingParty}',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
         marker: PdfOrderedMarker(
@@ -99,7 +99,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           items: PdfListItemCollection(<String>[
             'Bill to:',
             '${bill.nameOfBillingParty}',
-                'Address: ${bill.addressOfBillingParty}',
+                '${bill.addressOfBillingParty}',
           ]),
           font: PdfStandardFont(PdfFontFamily.helvetica, 14),
           marker: PdfOrderedMarker(
@@ -128,8 +128,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     headerRow.style.font =
         PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     PdfGridRow row = grid.rows.add();
-    row.style.font =
-        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     for(var item in bill.itemList){
       row.cells[0].value = item['name'];
       var total = (item['qty']*item['price']);
@@ -204,7 +202,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     r.cells[1].value = 'Rs. ${bill.advanceAmount}';
     r = newGrid.rows.add();
     r.cells[0].value = 'Balance';
-    r.cells[1].value = 'Rs. ${bill.balanceAmount}';
+    r.cells[1].value = 'Rs. ${(bill.balanceAmount).toStringAsFixed(1)}';
 
     newGrid.style.cellPadding = PdfPaddings(left: 10, top: 5);
     newGrid.allowRowBreakingAcrossPages = true;
@@ -268,7 +266,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         items: PdfListItemCollection(<String>[
           _isAddressSame ? 'Bill/Ship to:': 'Ship to:',
           '${bill.nameOfShippingParty}',
-              'Address: ${bill.addressOfShippingParty}',
+              '${bill.addressOfShippingParty}',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
         marker: PdfOrderedMarker(
@@ -286,7 +284,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           items: PdfListItemCollection(<String>[
             'Bill to:',
             '${bill.nameOfBillingParty}',
-                'Address: ${bill.addressOfBillingParty}',
+                '${bill.addressOfBillingParty}',
           ]),
           font: PdfStandardFont(PdfFontFamily.helvetica, 14),
           marker: PdfOrderedMarker(

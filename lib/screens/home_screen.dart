@@ -91,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         width: double.infinity,
                         child: RaisedButton(
+                          highlightColor: Colors.white,
                           color: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(

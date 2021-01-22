@@ -106,7 +106,7 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with Auto
                           ),
                           hintText: "Password",
                         ),
-                        obscureText: _isVisible,
+                        obscureText: !_isVisible,
                         validator: (value) {
                           if (value.isEmpty) {
                             return "Cannot be empty";

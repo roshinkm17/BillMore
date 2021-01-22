@@ -22,6 +22,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
   Bank bank = new Bank();
   String _logoName ;
   String _signatureName ;
+  String currentUserEmail;
   final _formKey = GlobalKey<FormState>();
   uploadDetails(Company companyDetails, Bank bankDetails) async{
     Map details = {
@@ -48,13 +49,21 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
     print("database uploaded!");
   }
 
-  void registerUser(email, password) async{
-    BackendlessUser user = BackendlessUser();
-    user.email = email;
-    user.password = password;
-    await Backendless.userService.register(user);
-    await Backendless.userService.logout();
-    await Backendless.userService.login(email, password, true);
+  registerUser(email, password) async{
+   try{
+     BackendlessUser user = BackendlessUser();
+     user.email = email;
+     user.password = password;
+     await Backendless.userService.register(user);
+     await Backendless.userService.login(email, password, true);
+     setState(() {
+       currentUserEmail = email;
+     });
+     return 0;
+   }catch(e){
+     print(e);
+     return 1;
+   }
 
   }
 
@@ -208,32 +217,44 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                   SizedBox(height: 20),
                   MainButton(
                 buttonText: "Continue",
-                    onPressed: (){
+                    onPressed: ()async {
                       if(_formKey.currentState.validate()){
                         if(_logoName != null && _signatureName != null ){
                           //Continue
-                          uploadDetails(args['company'], bank);
-                          registerUser(args['company'].email, args['company'].password);
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context){
-                              return AlertDialog(
-                                title: Text("Registered Successfully!"),
-                                content: Icon(Icons.check),
-                                actions: [
-                                  FlatButton(
-                                    onPressed: (){
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("Ok"),
-                                  ),
-                                ],
-                              );
-                            }
-                          );
-                          Future.delayed(const Duration(milliseconds: 1500), (){
-                             Navigator.pushNamed(context, HomeScreen.id);
-                          });
+                          int res = await registerUser(args['company'].email, args['company'].password);
+                          if(res == 0){
+                            print("sucessfully registered!");
+                            uploadDetails(args['company'], bank);
+
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    title: Text("Registered Successfully!"),
+                                    content: Icon(Icons.check),
+                                    actions: [
+                                      FlatButton(
+                                        onPressed: (){
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("Ok"),
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
+                            Future.delayed(const Duration(milliseconds: 1500), (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: currentUserEmail)));
+                            });
+                          }
+                          else{
+                            final snackBar = SnackBar(
+                              content: Text('Error with data validation!'),
+                              duration: Duration(seconds: 2),
+                            );
+                            Scaffold.of(context).showSnackBar(snackBar);
+                          }
+
                         }
                         else{
                           final snackBar = SnackBar(
