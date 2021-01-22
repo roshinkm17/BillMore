@@ -14,6 +14,7 @@ class RegistrationScreenTwo extends StatefulWidget {
 class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with AutomaticKeepAliveClientMixin {
   Company company = new Company();
   final _formKey = GlobalKey<FormState>();
+  bool _isVisible = false;
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context).settings.arguments as Map<String, String>;
@@ -86,13 +87,26 @@ class _RegistrationScreenTwoState extends State<RegistrationScreenTwo> with Auto
                     SizedBox(height: 10),
                     TextFormField(
                         decoration: InputDecoration(
+                          suffix: Container(
+                            height: 15,
+                            child: IconButton(
+                              padding: EdgeInsets.all(0),
+                              color: Colors.grey,
+                              icon: Icon(_isVisible? Icons.visibility_off :Icons.visibility, color: Colors.grey,),
+                              onPressed: (){
+                                setState(() {
+                                  _isVisible = !_isVisible;
+                                });
+                              },
+                            ),
+                          ),
                           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.black),
                           ),
                           hintText: "Password",
                         ),
-                        obscureText: true,
+                        obscureText: _isVisible,
                         validator: (value) {
                           if (value.isEmpty) {
                             return "Cannot be empty";

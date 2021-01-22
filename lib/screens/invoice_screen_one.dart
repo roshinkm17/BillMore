@@ -5,7 +5,8 @@ import 'package:biller/components/mainButton.dart';
 import 'package:biller/screens/invoice_screen_two.dart';
 
 class InvoiceScreenOne extends StatefulWidget {
-  InvoiceScreenOne({Key key}): super(key: key);
+  InvoiceScreenOne({Key key, this.layoutNumber}): super(key: key);
+  final layoutNumber;
   @override
   _InvoiceScreenOneState createState() => _InvoiceScreenOneState();
 }
@@ -127,7 +128,7 @@ class _InvoiceScreenOneState extends State<InvoiceScreenOne> with AutomaticKeepA
                     buttonText: "Continue",
                     onPressed: (){
                       if (_formKey.currentState.validate()){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => InvoiceScreen(bill: bill, isSame: _isAddressSame),),);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => InvoiceScreen(bill: bill, isSame: _isAddressSame, layoutNumber: widget.layoutNumber,),),);
                       }
                       else{
                         final snackbar = SnackBar(

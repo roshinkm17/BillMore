@@ -1,10 +1,8 @@
 import 'dart:typed_data';
-import 'package:biller/screens/welcome_screen.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
-import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 import 'package:biller/components/CustomInputField.dart';
 import 'package:biller/components/mainButton.dart';
@@ -20,8 +18,9 @@ import 'package:backendless_sdk/backendless_sdk.dart';
 import 'package:http/http.dart' as http;
 
 class InvoiceScreen extends StatefulWidget {
-  InvoiceScreen({Key key, this.bill, this.isSame}) : super(key: key);
+  InvoiceScreen({Key key, this.bill, this.isSame, this.layoutNumber}) : super(key: key);
   final Bill bill;
+  final layoutNumber;
   final bool isSame;
   static String id = "invoice_screen_id";
   @override
@@ -44,7 +43,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   String logoPath, signaturePath;
 
 
-  Future<void> _createPDF() async {
+  Future<void> _createLayoutOnePDF() async {
     PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
     final pageWidth = page.size.width;
@@ -81,7 +80,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final PdfOrderedList shippingAddress = PdfOrderedList(
         items: PdfListItemCollection(<String>[
           _isAddressSame ? 'Bill/Ship to:': 'Ship to:',
-          '${bill.nameOfShippingParty}'
+          '${bill.nameOfShippingParty}',
           'Address: ${bill.addressOfShippingParty}',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
@@ -99,7 +98,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       final PdfOrderedList billingAddress = PdfOrderedList(
           items: PdfListItemCollection(<String>[
             'Bill to:',
-            '${bill.nameOfBillingParty}'
+            '${bill.nameOfBillingParty}',
                 'Address: ${bill.addressOfBillingParty}',
           ]),
           font: PdfStandardFont(PdfFontFamily.helvetica, 14),
@@ -124,16 +123,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final PdfGridRow headerRow = grid.headers.add(1)[0];
     headerRow.cells[0].value = 'Items';
     headerRow.cells[1].value = 'Qty';
-    headerRow.cells[2].value = 'Tax';
+    headerRow.cells[2].value = 'Price/Unit';
     headerRow.cells[3].value = 'Amount';
     headerRow.style.font =
         PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     PdfGridRow row = grid.rows.add();
+    row.style.font =
+        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     for(var item in bill.itemList){
       row.cells[0].value = item['name'];
+      var total = (item['qty']*item['price']);
       row.cells[1].value = "${item['qty']}";
-      row.cells[2].value = item['unit'];
-      row.cells[3].value = "${item['price']}";
+      row.cells[2].value = "Rs. ${item['price']}";
+      row.cells[3].value = "Rs. ${total}";
       row = grid.rows.add();
     }
     grid.style.cellPadding = PdfPaddings(left: 10, top: 5);
@@ -146,9 +148,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final PdfOrderedList bankDetails = PdfOrderedList(
         items: PdfListItemCollection(<String>[
           'Bank Details',
-          'Bank Name: ${userDetails['bankName']}',
+          '${userDetails['bankName']}',
           'IFSC: ${userDetails['ifscCode']}',
-          'Bank and Branch: ${userDetails['bankName'] + userDetails['branch']}',
+          'Branch: ${userDetails['bankName'] +" "+ userDetails['branch']}',
           'Terms and Conditions',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
@@ -177,33 +179,32 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         format: PdfLayoutFormat(layoutType: PdfLayoutType.paginate));
     final PdfGrid newGrid = PdfGrid();
     newGrid.columns.add(count: 2);
-    PdfGridCellStyle gridCellStyle = PdfGridCellStyle();
     PdfGridRow r = newGrid.rows.add();
     r.cells[0].value = 'Taxable amount';
-    r.cells[1].value = '${bill.taxableAmount}';
+    r.cells[1].value = 'Rs. ${bill.taxableAmount}';
     r = newGrid.rows.add();
-    r.cells[0].value = 'CGST (${bill.gstPercentage/2})%';
-    r.cells[1].value = '${bill.gstAmount/2}';
+    r.cells[0].value = 'CGST (${(bill.gstPercentage/2).toStringAsFixed(1)})%';
+    r.cells[1].value = 'Rs. ${(bill.gstAmount/2).toStringAsFixed(1)}';
     r = newGrid.rows.add();
-    r.cells[0].value = 'SGST (${bill.gstPercentage/2})%';
-    r.cells[1].value = '${bill.gstAmount/2}';
+    r.cells[0].value = 'SGST (${(bill.gstPercentage/2).toStringAsFixed(1)})%';
+    r.cells[1].value = 'Rs. ${(bill.gstAmount/2).toStringAsFixed(1)}';
     r = newGrid.rows.add();
     for(var charge in bill.chargeList){
       r.cells[0].value = '${charge['name']}';
-      r.cells[1].value = '${charge['amount']}';
+      r.cells[1].value = 'Rs. ${charge['amount']}';
       r = newGrid.rows.add();
     }
     r.cells[0].value = 'Discount';
-    r.cells[1].value = '${bill.discount}';
+    r.cells[1].value = 'Rs. ${bill.discount}';
     r = newGrid.rows.add();
     r.cells[0].value = 'Grand Total';
-    r.cells[1].value = '${bill.totalAmount}';
+    r.cells[1].value = 'Rs. ${bill.totalAmount}';
     r = newGrid.rows.add();
     r.cells[0].value = 'Advance';
-    r.cells[1].value = '${bill.advanceAmount}';
+    r.cells[1].value = 'Rs. ${bill.advanceAmount}';
     r = newGrid.rows.add();
     r.cells[0].value = 'Balance';
-    r.cells[1].value = '${bill.balanceAmount}';
+    r.cells[1].value = 'Rs. ${bill.balanceAmount}';
 
     newGrid.style.cellPadding = PdfPaddings(left: 10, top: 5);
     newGrid.allowRowBreakingAcrossPages = true;
@@ -230,6 +231,194 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     });
     OpenFile.open('$path/bill#_${bill.invoiceNumber}.pdf');
   }
+  Future<void> _createLayoutTwoPDF() async {
+    PdfDocument document = PdfDocument();
+    final PdfPage page = document.pages.add();
+    final pageWidth = page.size.width;
+    final pageHeight = page.size.height;
+    var userDetails = await getDetailsFromDatabase();
+    userDetails = userDetails[0];
+
+
+
+    final Uint8List imageData = File(logoPath).readAsBytesSync();
+    final PdfBitmap image = PdfBitmap(imageData);
+    final PdfOrderedList topListDetails = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          'Name: ${userDetails['name']}',
+          'Address: ${userDetails['address']}',
+          'Mobile: ${userDetails['mobile']}',
+          'GSTN: ${userDetails['gstNumber']}'
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    topListDetails.draw(
+      page: page,
+      bounds: Rect.fromLTWH(180, 0, 500, 150),
+    );
+    page.graphics.drawLine(PdfPens.black, Offset(0, 120), Offset(page.size.width, 120));
+    page.graphics.drawString("Invoice number: ${bill.invoiceNumber}", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds: Rect.fromLTWH(0, 130, 500, 100));
+    final PdfOrderedList shippingAddress = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          _isAddressSame ? 'Bill/Ship to:': 'Ship to:',
+          '${bill.nameOfShippingParty}',
+              'Address: ${bill.addressOfShippingParty}',
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    shippingAddress.draw(
+      page: page,
+      bounds: Rect.fromLTWH(-20, 155, 150, 150),
+    );
+    if(_isAddressSame == false){
+      final PdfOrderedList billingAddress = PdfOrderedList(
+          items: PdfListItemCollection(<String>[
+            'Bill to:',
+            '${bill.nameOfBillingParty}',
+                'Address: ${bill.addressOfBillingParty}',
+          ]),
+          font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+          marker: PdfOrderedMarker(
+              style: PdfNumberStyle.none,
+              font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+          markerHierarchy: true,
+          format: PdfStringFormat(lineSpacing: 10),
+          textIndent: 10);
+      billingAddress.draw(
+        page: page,
+        bounds: Rect.fromLTWH(150, 155, 150, 150),
+      );
+    }
+
+
+    page.graphics.drawString("Invoice Due Date: ${bill.dueDate}", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds: Rect.fromLTWH(320, 130, 500, 100));
+    page.graphics.drawLine(PdfPens.black, Offset(0, 230), Offset(page.size.width, 230));
+    final PdfGrid grid = PdfGrid();
+    grid.columns.add(count: 4);
+    final PdfGridRow headerRow = grid.headers.add(1)[0];
+    headerRow.cells[0].value = 'Items';
+    headerRow.cells[1].value = 'Qty';
+    headerRow.cells[2].value = 'Price/Unit';
+    headerRow.cells[3].value = 'Amount';
+    headerRow.style.font =
+        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+    PdfGridRow row = grid.rows.add();
+    row.style.font =
+        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
+    for(var item in bill.itemList){
+      row.cells[0].value = item['name'];
+      var total = (item['qty']*item['price']);
+      row.cells[1].value = "${item['qty']}";
+      row.cells[2].value = "Rs. ${item['price']}";
+      row.cells[3].value = "Rs. ${total}";
+      row = grid.rows.add();
+    }
+    grid.style.cellPadding = PdfPaddings(left: 10, top: 5);
+    grid.allowRowBreakingAcrossPages = true;
+    grid.draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            0, 260, page.getClientSize().width, page.getClientSize().height));
+    page.graphics.drawLine(PdfPens.black, Offset(0, 290 + (23.0*grid.rows.count)), Offset(page.size.width, 290 + (23.0*grid.rows.count)));
+    final PdfOrderedList bankDetails = PdfOrderedList(
+        items: PdfListItemCollection(<String>[
+          'Bank Details',
+          '${userDetails['bankName']}',
+          'IFSC: ${userDetails['ifscCode']}',
+          'Bank ${userDetails['bankName'] + " " + userDetails['branch']}',
+          'Terms and Conditions',
+        ]),
+        font: PdfStandardFont(PdfFontFamily.helvetica, 14),
+        marker: PdfOrderedMarker(
+            style: PdfNumberStyle.none,
+            font: PdfStandardFont(PdfFontFamily.helvetica, 0)),
+        markerHierarchy: true,
+        format: PdfStringFormat(lineSpacing: 10),
+        textIndent: 10);
+    bankDetails.draw(
+      page: page,
+      bounds: Rect.fromLTWH(-10, 290 + (23.0*grid.rows.count)+ 30, 200, 200),
+    );
+    const String terms =
+        'Adobe Systems Incorporated\'s Portable Document Format (PDF) is the de facto'
+        'standard for the accurate, reliable, and platform-independent representation of a paged'
+        'document. It\'s the only universally accepted file format that allows pixel-perfect layouts.';
+    final PdfLayoutResult layoutResult = PdfTextElement(
+        text: terms,
+        font: PdfStandardFont(PdfFontFamily.helvetica, 12),
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)))
+        .draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            15, 290 + (23.0*grid.rows.count)+ 230, page.getClientSize().width/2, page.getClientSize().height),
+        format: PdfLayoutFormat(layoutType: PdfLayoutType.paginate));
+    final PdfGrid newGrid = PdfGrid();
+    newGrid.columns.add(count: 2);
+    PdfGridRow r = newGrid.rows.add();
+    r.cells[0].value = 'Taxable amount';
+    r.cells[1].value = 'Rs. ${bill.taxableAmount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'CGST (${(bill.gstPercentage/2).toStringAsFixed(1)})%';
+    r.cells[1].value = 'Rs. ${(bill.gstAmount/2).toStringAsFixed(1)}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'SGST (${(bill.gstPercentage/2).toStringAsFixed(1)})%';
+    r.cells[1].value = 'Rs. ${(bill.gstAmount/2).toStringAsFixed(1)}';
+    r = newGrid.rows.add();
+    for(var charge in bill.chargeList){
+      r.cells[0].value = '${charge['name']}';
+      r.cells[1].value = 'Rs. ${charge['amount']}';
+      r = newGrid.rows.add();
+    }
+    r.cells[0].value = 'Discount';
+    r.cells[1].value = 'Rs. ${bill.discount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Grand Total';
+    r.cells[1].value = 'Rs. ${bill.totalAmount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Advance';
+    r.cells[1].value = 'Rs. ${bill.advanceAmount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Balance';
+    r.cells[1].value = 'Rs. ${bill.balanceAmount}';
+
+    newGrid.style.cellPadding = PdfPaddings(left: 10, top: 5);
+    newGrid.allowRowBreakingAcrossPages = true;
+    newGrid.draw(
+        page: page,
+        bounds: Rect.fromLTWH(
+            300, 320 + (23.0*grid.rows.count), page.getClientSize().width, page.getClientSize().height));
+    final Uint8List imageDataTwo = File(signaturePath).readAsBytesSync();
+    final PdfBitmap imageTwo = PdfBitmap(imageDataTwo);
+    page.graphics.drawImage(imageTwo,Rect.fromLTWH(460, (320 + (23.0*grid.rows.count)) + 30 +(23*newGrid.rows.count), 50, 50));
+    page.graphics.drawString("Signature", PdfStandardFont(PdfFontFamily.helvetica, 14),
+        bounds:Rect.fromLTWH(450, (320 + (23.0*grid.rows.count)) + 90 +(23*newGrid.rows.count), 200, 100) );
+
+
+
+    List<int> bytes = document.save();
+    document.dispose();
+    final directory = await getExternalStorageDirectory();
+    final path = directory.path;
+    File file = File('$path/bill#_${bill.invoiceNumber}.pdf');
+    await file.writeAsBytes(bytes, flush: true);
+    setState(() {
+      _isSaving = false;
+    });
+    OpenFile.open('$path/bill#_${bill.invoiceNumber}.pdf');
+  }
+
   initState(){
     super.initState();
     setState(() {
@@ -289,34 +478,33 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     BackendlessUser user = BackendlessUser();
     try{
       user = await Backendless.userService.currentUser();
+      DataQueryBuilder queryBuilder = DataQueryBuilder();
+      queryBuilder.whereClause = "email = '${user.email}'";
+      try{
+        var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
+        print("Details from database aquired!");
+        var urlLogo = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/logo/${userDetails[0]['logo']}";
+        var urlSignature = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/signature/${userDetails[0]['signature']}";
+        var logo = await http.get(urlLogo);
+        var signature = await http.get(urlSignature);
+        logoFile = new File("/storage/emulated/0/Download/${userDetails[0]['logo']}");
+        signatureFile = new File("/storage/emulated/0/Download/${userDetails[0]['signature']}");
+        logoFile.writeAsBytesSync(logo.bodyBytes);
+        signatureFile.writeAsBytesSync(signature.bodyBytes);
+        setState(() {
+          logoPath = "/storage/emulated/0/Download/${userDetails[0]['logo']}";
+          signaturePath = "/storage/emulated/0/Download/${userDetails[0]['signature']}";
+        });
+        return userDetails;
+      }catch(e){
+        print(e);
+      }
       print(user.email);
     }
     catch(e){
       print(e);
       await Backendless.userService.logout();
       // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
-    }
-
-    DataQueryBuilder queryBuilder = DataQueryBuilder();
-    queryBuilder.whereClause = "email = '${user.email}'";
-    try{
-      var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
-      print("Details from database aquired!");
-      var urlLogo = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/logo/${userDetails[0]['logo']}";
-      var urlSignature = "https://backendlessappcontent.com/C2FF4027-F6D2-C6BC-FF32-6C7A20EF4000/7F59D6C9-55F2-478D-8999-237EADD355F7/files/${user.email}/signature/${userDetails[0]['signature']}";
-      var logo = await http.get(urlLogo);
-      var signature = await http.get(urlSignature);
-      logoFile = new File("/storage/emulated/0/Download/${userDetails[0]['logo']}");
-      signatureFile = new File("/storage/emulated/0/Download/${userDetails[0]['signature']}");
-      logoFile.writeAsBytesSync(logo.bodyBytes);
-      signatureFile.writeAsBytesSync(signature.bodyBytes);
-      setState(() {
-        logoPath = "/storage/emulated/0/Download/${userDetails[0]['logo']}";
-        signaturePath = "/storage/emulated/0/Download/${userDetails[0]['signature']}";
-      });
-      return userDetails;
-    }catch(e){
-      print(e);
     }
   }
   roundNumbers(){
@@ -604,7 +792,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     children: [
                       Expanded(
                           flex: 3,
-                          child: Text("GST", style: TextStyle(fontSize: 16))),
+                          child: Text("GST(${bill.gstAmount.toStringAsFixed(2)})", style: TextStyle(fontSize: 16))),
                       Expanded(
                         child: CustomInputField(
                           placeholder: "18%(default)",
@@ -786,7 +974,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         setState(() {
                           _isSaving = true;
                         });
-                        _createPDF();
+                        if(widget.layoutNumber == 1){
+                        _createLayoutOnePDF();
+                        }else{
+                          _createLayoutTwoPDF();
+                        }
                       }
                       //Bill preview screen
                     },
