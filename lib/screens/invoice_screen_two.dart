@@ -40,11 +40,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   int count = 0;
 
 
-  Future<void> _createPDF({var name}) async {
+  Future<void> _createPDF() async {
     PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
     final pageWidth = page.size.width;
     final pageHeight = page.size.height;
+    var userDetails = await getDetailsFromDatabase();
+    userDetails = userDetails[0];
 
 
 
@@ -53,10 +55,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 200, 100));
     final PdfOrderedList topListDetails = PdfOrderedList(
         items: PdfListItemCollection(<String>[
-          'Name: Tetra Infotech',
-          'Address: Banglore',
-          'Mobile: 900009342',
-          'GSTN: HGDJH293345345'
+          'Name: ${userDetails['name']}',
+          'Address: ${userDetails['address']}',
+          'Mobile: ${userDetails['mobile']}',
+          'GSTN: ${userDetails['gstNumber']}'
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
         marker: PdfOrderedMarker(
@@ -100,20 +102,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     headerRow.style.font =
         PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     PdfGridRow row = grid.rows.add();
-    row.cells[0].value = 'ALFKI';
-    row.cells[1].value = 'Maria Anders';
-    row.cells[2].value = 'Germany';
-    row.cells[3].value = 'Germany';
-    row = grid.rows.add();
-    row.cells[0].value = 'ANATR';
-    row.cells[1].value = 'Ana Trujillo';
-    row.cells[2].value = 'Mexico';
-    row.cells[3].value = 'Germany';
-    row = grid.rows.add();
-    row.cells[0].value = 'ANTON';
-    row.cells[1].value = 'Antonio Mereno';
-    row.cells[2].value = 'Mexico';
-    row.cells[3].value = 'Germany';
+    for(var item in bill.itemList){
+      row.cells[0].value = item['name'];
+      row.cells[1].value = "${item['qty']}";
+      row.cells[2].value = item['unit'];
+      row.cells[3].value = "${item['price']}";
+      row = grid.rows.add();
+    }
     grid.style.cellPadding = PdfPaddings(left: 10, top: 5);
     grid.allowRowBreakingAcrossPages = true;
     grid.draw(
@@ -124,9 +119,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final PdfOrderedList bankDetails = PdfOrderedList(
         items: PdfListItemCollection(<String>[
           'Bank Details',
-          'Bank Name: XXXXX',
-          'Bill/Ship to: XXXX',
-          'Address:XXXXXX',
+          'Bank Name: ${userDetails['bankName']}',
+          'IFSC: ${userDetails['ifscCode']}',
+          'Bank and Branch: ${userDetails['bankName'] + userDetails['branch']}',
           'Terms and Conditions',
         ]),
         font: PdfStandardFont(PdfFontFamily.helvetica, 14),
@@ -153,30 +148,37 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         .draw(
         page: page,
         bounds: Rect.fromLTWH(
-            15, 450 + (23.0*grid.rows.count), page.getClientSize().width/2, page.getClientSize().height),
+            15, 470 + (23.0*grid.rows.count), page.getClientSize().width/2, page.getClientSize().height),
         format: PdfLayoutFormat(layoutType: PdfLayoutType.paginate));
     final PdfGrid newGrid = PdfGrid();
     newGrid.columns.add(count: 2);
-    final PdfGridRow header = newGrid.headers.add(1)[0];
     PdfGridCellStyle gridCellStyle = PdfGridCellStyle();
-    header.cells[0].value = 'Items';
-    header.cells[1].value = 'Qty';
-    header.style.font =
-        PdfStandardFont(PdfFontFamily.helvetica, 10, style: PdfFontStyle.bold);
     PdfGridRow r = newGrid.rows.add();
-    r.cells[0].value = 'ALFKI';
-    r.cells[1].value = 'Maria Anders';
+    r.cells[0].value = 'Taxable amount';
+    r.cells[1].value = '${bill.taxableAmount}';
     r = newGrid.rows.add();
-    r.cells[0].value = 'ANATR';
-    r.cells[1].value = 'Ana Trujillo';
+    r.cells[0].value = 'CGST (${bill.gstPercentage/2})%';
+    r.cells[1].value = '${bill.gstAmount}/2';
     r = newGrid.rows.add();
-    r.cells[0].value = 'ANTON';
-    r.cells[1].value = 'Antonio Mereno';
+    r.cells[0].value = 'SGST (${bill.gstPercentage/2})%';
+    r.cells[1].value = '${bill.gstAmount}/2';
     r = newGrid.rows.add();
-    r.cells[0].value = 'ANTON';
-    r.cells[1].value = 'Antonio Mereno'; r = newGrid.rows.add();
-    r.cells[0].value = 'ANTON';
-    r.cells[1].value = 'Antonio Mereno';
+    for(var charge in bill.chargeList){
+      r.cells[0].value = '${charge['name']}';
+      r.cells[1].value = '${charge['amount']}';
+      r = newGrid.rows.add();
+    }
+    r.cells[0].value = 'Discount';
+    r.cells[1].value = '${bill.discount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Grand Total';
+    r.cells[1].value = '${bill.totalAmount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Advance';
+    r.cells[1].value = '${bill.advanceAmount}';
+    r = newGrid.rows.add();
+    r.cells[0].value = 'Balance';
+    r.cells[1].value = '${bill.balanceAmount}';
 
     newGrid.style.cellPadding = PdfPaddings(left: 10, top: 5);
     newGrid.allowRowBreakingAcrossPages = true;
@@ -194,9 +196,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     document.dispose();
     final directory = await getExternalStorageDirectory();
     final path = directory.path;
-    File file = File('$path/table.pdf');
+    File file = File('$path/${bill.invoiceNumber}_biller.pdf');
     await file.writeAsBytes(bytes, flush: true);
-    OpenFile.open('$path/table.pdf');
+    setState(() {
+      _isSaving = false;
+    });
+    OpenFile.open('$path/${bill.invoiceNumber}_biller.pdf');
   }
   initState(){
     super.initState();
@@ -254,8 +259,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return 0;
   }
   getDetailsFromDatabase() async{
+    BackendlessUser user = await Backendless.userService.currentUser();
     DataQueryBuilder queryBuilder = DataQueryBuilder();
-    queryBuilder.whereClause = "email = 'abcd@gmail.com'";
+    queryBuilder.whereClause = "email = '${user.email}'";
     try{
       var userDetails = await Backendless.data.of("UserDetails").find(queryBuilder);
       print("Details from database aquired!");
@@ -728,11 +734,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     onPressed: () async{
                       if(_formKey.currentState.validate()){
                         roundNumbers();
+                        refreshAmounts();
                         setState(() {
                           _isSaving = true;
-                        });
-                        setState(() {
-                          _isSaving = false;
                         });
                         _createPDF();
                       }
