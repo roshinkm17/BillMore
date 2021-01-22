@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _isSaving = false;
                         });
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: res.email,)));
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: res.email,)));
 
                       }
                       else{

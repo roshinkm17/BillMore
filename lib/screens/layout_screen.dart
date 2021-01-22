@@ -1,5 +1,4 @@
 import 'package:biller/components/mainButton.dart';
-import 'package:biller/screens/invoice_screen_two.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:biller/screens/invoice_screen_one.dart';
@@ -44,6 +43,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                     image: DecorationImage(
+
                       image:  AssetImage('assets/layouts/layout1.png'),
                       fit: BoxFit.cover,
                     )

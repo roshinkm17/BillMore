@@ -33,8 +33,6 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
       "address": companyDetails.address,
       "businessType": companyDetails.businessType,
       "gstNumber": companyDetails.gstNumber,
-      // "signature": companyDetails.signature.toString(),
-      // "logo": companyDetails.logo.toString(),
       "bankName": bankDetails.name,
       "ifscCode": bankDetails.ifsc,
       "accNumber": bankDetails.accNumber,
@@ -223,7 +221,7 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                           //Continue
                           int res = await registerUser(args['company'].email, args['company'].password);
                           if(res == 0){
-                            print("sucessfully registered!");
+                            print("successfully registered!");
                             uploadDetails(args['company'], bank);
 
                             showDialog(
@@ -244,7 +242,9 @@ class _RegistrationScreenThreeState extends State<RegistrationScreenThree> {
                                 }
                             );
                             Future.delayed(const Duration(milliseconds: 1500), (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: currentUserEmail)));
+                              Navigator.of(context)
+                                  .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: currentUserEmail)), (Route<dynamic> route) => false);
+                              // Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUseremail: currentUserEmail)));
                             });
                           }
                           else{
