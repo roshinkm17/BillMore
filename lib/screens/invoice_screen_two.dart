@@ -138,9 +138,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     const String terms =
         'Adobe Systems Incorporated\'s Portable Document Format (PDF) is the de facto'
         'standard for the accurate, reliable, and platform-independent representation of a paged'
-        'document. It\'s the only universally accepted file format that allows pixel-perfect layouts.'
-        'In addition, PDF supports user interaction and collaborative workflows that are not'
-        'possible with printed documents.';
+        'document. It\'s the only universally accepted file format that allows pixel-perfect layouts.';
     final PdfLayoutResult layoutResult = PdfTextElement(
         text: terms,
         font: PdfStandardFont(PdfFontFamily.helvetica, 12),
